@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    config:
+      discovery:
+        service-id: config
+        enabled: true
+      username: tr
+      password: 123456
+      label: 1.0.0
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://trc:tairan777Test@eureka.fengdai.org:30000/eureka
