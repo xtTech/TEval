@@ -1,1 +1,1 @@
-= TEval-泰易服TBD: 项目构建中
+ifndef::imagesdir[:imagesdir: ../resources/images]=====TEval是一套Out-Of-The-Box的企业级集服务治理、交易平台。======== 核心功能* 以最小化的改造成本实现异构服务的高效调用* 插件化的服务治理能力，官方集成了认证、流控、契约检查、降级、全局日志、质量监控、安全防护等功能* 可视化的服务治理配置及监控警告* 消费者驱动的契约测试(Consumer-Driven Contracts)支持* 服务交易市场及调用计费支持* 小服务框架，快速开发轻量级高可用服务=== 服务的改造.服务调用方* 在TEval中注册一个账号，获取AccountSecret* 在TEval中订阅某些服务* 在程序中嵌入对应语言及框架版本的SDK* 添加AccountSecret配置（Classpath/其它指定路径/启动参数等地方）TIP: 程序代码不用任何修改！.服务提供方* 在TEval中配置并发布服务* （可选，使用默认Proxy服务）安装TEval Proxy服务（Jar服务）TIP: 程序代码不用任何修改！

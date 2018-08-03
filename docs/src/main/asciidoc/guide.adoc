@@ -1,0 +1,5 @@
+ifndef::imagesdir[:imagesdir: ../resources/]
+
+== 新手入门
+
+!TBD!

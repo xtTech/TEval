@@ -1,0 +1,5 @@
+ifndef::imagesdir[:imagesdir: ../resources/]
+
+== 部署手册
+
+!TBD!

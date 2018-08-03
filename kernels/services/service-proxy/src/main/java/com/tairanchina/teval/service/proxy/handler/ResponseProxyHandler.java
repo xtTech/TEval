@@ -15,7 +15,7 @@ public class ResponseProxyHandler {
 
     public Future<FilterContext> handle(FilterContext context) {
         Future<FilterContext> future = Future.future();
-        Iterator<FilterHandler> filterHandlers = context.getApiConfig().getFilterTaskIds().stream()
+        Iterator<FilterHandler> filterHandlers = context.getApiConfig().getFilterIds().stream()
                 .map(i -> GlobalContainer.filterHandlers.get(i))
                 .collect(Collectors.toList()).iterator();
         future.complete(context);

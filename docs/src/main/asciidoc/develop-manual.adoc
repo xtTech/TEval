@@ -1,0 +1,6 @@
+ifndef::imagesdir[:imagesdir: ../resources/]
+
+== 开发手册
+
+=== 环境搭建
+

@@ -17,6 +17,8 @@
 
     <properties>
         <teval.version>1.0.0-SNAPSHOT</teval.version>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <maven.install.skip>false</maven.install.skip>
     </properties>
 
     <dependencyManagement>
@@ -28,17 +30,17 @@
             </dependency>
             <dependency>
                 <groupId>com.tairanchina.teval</groupId>
-                <artifactId>sdk</artifactId>
-                <version>${teval.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.tairanchina.teval</groupId>
                 <artifactId>common-service</artifactId>
                 <version>${teval.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.tairanchina.teval</groupId>
                 <artifactId>plugin-proxy-template</artifactId>
+                <version>${teval.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tairanchina.teval</groupId>
+                <artifactId>sdk-jvm</artifactId>
                 <version>${teval.version}</version>
             </dependency>
         </dependencies>

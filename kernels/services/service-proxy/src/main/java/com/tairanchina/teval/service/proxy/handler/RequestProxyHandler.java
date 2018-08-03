@@ -134,7 +134,7 @@ public class RequestProxyHandler {
                     );
 
 
-            Iterator<FilterHandler> filterHandlers = api.getFilterTaskIds().stream()
+            Iterator<FilterHandler> filterHandlers = api.getFilterIds().stream()
                     .map(i -> GlobalContainer.filterHandlers.get(i))
                     .collect(Collectors.toList()).iterator();
             future.complete(filterContext);

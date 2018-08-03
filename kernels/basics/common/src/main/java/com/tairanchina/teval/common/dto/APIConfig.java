@@ -21,7 +21,7 @@ public class APIConfig {
     private Map<String, String> redirectAddCookiesOpt = new HashMap<>();
     private Set<String> redirectRemoveCookiesOpt = new HashSet<>();
     private int redirectTimeoutMs = DEFAULT_REDIRECT_TIMEOUT_MS;
-    private List<String> filterTaskIds;
+    private List<String> filterIds;
     private String mockSrc;
 
     public String getProxyAppId() {
@@ -159,12 +159,12 @@ public class APIConfig {
         return this;
     }
 
-    public List<String> getFilterTaskIds() {
-        return filterTaskIds;
+    public List<String> getFilterIds() {
+        return filterIds;
     }
 
-    public APIConfig setFilterTaskIds(List<String> filterTaskIds) {
-        this.filterTaskIds = filterTaskIds;
+    public APIConfig setFilterIds(List<String> filterIds) {
+        this.filterIds = filterIds;
         return this;
     }
 

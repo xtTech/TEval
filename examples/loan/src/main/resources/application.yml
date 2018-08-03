@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: teval-example-loan
+
+server:
+  port: 10000
+

@@ -1,0 +1,276 @@
+ifndef::imagesdir[:imagesdir: ../resources/]
+
+== 设计架构
+
+=== 技术目标
+
+. 实现插件支持的高性能代理网关
+. 实现透明服务调用SDK
+. 实现插件动态配置
+. 实现轻量级微服务框架以支持小服务功能
+
+=== SLO
+
+* 代理网关TPS
+** 2w/节点（4核8G，没有启用插件）
+** 5k/节点（4核8G，启用全部官方插件）
+* 代理网关平均处理用时
+** 10ms（4核8G，没有启用插件）
+** 100ms（4核8G，启用全部官方插件）
+
+=== 核心架构
+
+image::images/kernel-architecture.png[]
+
+TEval的核心在于使用网关代理服务调用，Proxy是代理网关，支持全局部署或每个应用独立部署。
+Proxy在启动时向Admin服务注册并获取网关与服务API配置信息，
+并初始化插件栈，服务调用者（Invoker）通过TEval提供的SDK发起请求，此SDK会修改或扩展主流的网络调用工具，
+旨在让调用者不需要修改修改调用代码就可以植入TEval需要的参数。
+
+==== Proxy设计
+
+image::images/proxy-architecture.png[]
+
+Proxy基于Vert.x，实现Reactive架构，并由Vert.x的Cluster机制提供Distributed Map、Distributed Counters支持。
+网关支持多实例，启动时会向Admin获取网关配置信息，注册网关实例并完成一些必要的初始化操作，包含但不限于：
+
+* Config Fetch: 获取网关本身的配置，如代理服务的端口号、Redis服务的配置信息等
+* APIs Config Fetch: 获取Proxy下各API的配置，包含代理命中规则、转发规则、包含的插件、合法的调用者等
+* Monitor Setting: 开启管理服务，注册/health与/metrics接口，提供监控所需要的指标
+* Redis Client Init: 初始Redis Client
+* Proxy Service Init: 初始化代理服务
+* Instance Registry: 注册自身实例到Admin，以便SDK感知代理网关地址
+
+Config Fetch会定时轮询，它有一个version字段，任何与Proxy有关的配置变更（如API规则修改、授权关系修改等）都会修改此字段，
+Config Fetch在发现version变更后会重新执行APIs Config Fetch。
+
+Proxy会通过APIs Config Fetch获取服务的授权关系（AccountSecret -> ServiceInfo）,
+当收到调用请求时从请求Header中获取AccountSecret，比较其对应的请求是否在授权关系中进而选择放行或拒绝。
+
+代理转发支持过滤处理，Proxy实现了一套标准化过滤插件体系，核心要求如下：
+
+* 插件都要实现Request与Response方法，Request为代理命中后转发前调用的逻辑，Response为转发响应后代理响应前调用的逻辑
+* 插件逻辑都要求异步化，非阻塞的
+* 插件只能执行本地计算、Redis时间复杂度为O(1)或O(logN)的操作、Distributed Map、Distributed Counters
+* 插件会强制加入Circuit Breaker，方法执行时间要求在100ms(默认，要配置修改)内
+
+==== SDK设计
+
+TEval需要在服务调用时加入身份参数到请求头部，为减少对现有服务的改造，SDK会扩展或修改主流网络调用工具，加入全局Header信息，
+SDK提供多语言版本，Java下支持HttpClient和OKHttp的主流版本。
+JVM中为避免包冲突，SDK的依赖包会用maven-shade-plugin的relocation重命名包名。
+
+image::images/sdk-architecture.png[]
+
+以HttpClient为例，SDK会重写CloseableHttpClient下的execute方法，服务调用者发布请求时会在这个重写的execute中执行请求检查：
+
+. 如果不存在配置信息说明是第一次调用，获取配置下AccountSecret并向Admin获取对应的Proxy实例IP列表和要代理的URL，此操作会定时轮询以实现配置更新
+. 比较当前请求的URL是否需要代理，如果不需要直接跳过，如果需要则改写请求Host为Proxy实例IP（IP列表轮询）并在Header中加上AccountSecret
+. 如果改写的IP ConnectTimeout 则换另一个IP，直到成功或IP轮询结束
+
+==== Admin设计
+
+.创建APP
+
+生成的服务标准代理URL为: HTTP://<TEval Host>:<TEval Port>/<APP Code>/<Service Path>?<Service Queries>
+
+TBD
+
+==== 数据架构
+
+image::images/kernel-model.png[]
+
+使用TEval需要注册账号(Account)，一个账号下可以创建一个或多个应用(APP)，一个应用下可以发布一个或多个服务(Service)，一个服务会关联一条或多条配置(Service Config)。
+一个代理网关(Proxy)可以代理一个或多个应用（下的所有服务），一个应用也可以被多个代理网关代理。
+
+一个账号会对应一个或多个密钥(Account Secret)，密钥用于订阅服务(Service Subscription)时与服务建立授权关系，不同的密钥可用于指定不同的用途（比如对应不同的微服务、不同的环境等）。
+
+一个代理网关会关联所有可有的插件并可重载插件的配置，一个服务可以选择启用一个或多个插件并可重载插件的配置。
+
+[source,js]
+.通用结构
+----
+{
+    "createUser":"", // 创建人
+    "createTime":"<long>", // 创建时间
+    "updateUser":"", // 更新人
+    "updateTime":"<long>", // 更新时间
+    "disabled":false, // 是否禁用
+    "delFlag":false // 是否删除
+}
+----
+
+[source,js]
+.KeyLog 关键日志
+----
+{
+    "type":"", // 日志类型，LOGIN / LOGOUT / CHANGE_IDENT
+    "level":"", // 日志级别 INFO / WRAN / ERROR, e.g. 异地登录/账号或密码错误=WRAN
+    "optUserId":"", // 操作用户Id，为空表示未登录用户 __system__ 表示系统操作
+    "optIp":"", // 操作IP
+    "message":"" // 日志描述
+}
+----
+
+[source,js]
+.Account 账号
+----
+{
+    "id":"", // 账号Id
+    "name":"", // 名称
+    "email":"", // 登录邮箱
+    "password":"" // 登录密码
+}
+----
+
+[source,js]
+.Account Secret 账号密钥
+----
+{
+    "id":"", // 账号密钥Id
+    "accountId":"", // 关联的账号Id
+    "name":"", // 名称，用于描述使用场景等
+    "secret":"", // 密钥
+    "expireTime":0L // 过期时间，0表示永不过期
+}
+----
+
+[source,js]
+.APP 应用
+----
+{
+    "id":"", // 应用Id
+    "code":"", // 应用Code
+    "name":"", // 名称
+    "remark":"", // 描述
+    "accountId":"" // 关联的账号Id
+}
+----
+
+[source,js]
+.Service 服务
+----
+{
+    "id":"", // 服务Id
+    "name":"", // 名称
+    "remark":"", // 描述
+    "public":true, // 是否开放，为false时服务订阅需要审核
+    "proxyMethod":"", // 代理命中的请求方法
+    "proxyPath":"", // 代理命中的URL路径
+    "proxyQueryOpt":{ // 代理命中的查询条件，可选
+        "<key>":["<命中的值，多个值间是OR关系>"]
+    },
+    "proxyHeaderOpt":{ // 代理命中的Header值，可选
+        "<key>":["<命中的值，多个值间是OR关系>"]
+    },
+    "redirectProtocol":"", // 跳转的协议， HTTP/HTTPS等
+    "redirectHost":"", // 跳转的Host
+    "redirectPort":80, // 跳转的端口
+    "redirectPath":"", // 跳转的URL路径
+    "redirectQueryOpt":{ // 跳转的查询条件，可选
+        "<key>":"<value>"
+    },
+    "redirectAddHeadersOpt":{ // 跳转时要添加的Header，可选
+        "<key>":"<value>"
+    },
+    "redirectRemoveHeadersOpt":["<key>"], // 跳转时要删除的Header，可选
+    "redirectAddCookiesOpt":{ // 跳转时要添加的Cookies，可选
+            "<key>":"<value>"
+        },
+    "redirectRemoveCookiesOpt":["<key>"], // 跳转时要删除的Cookies，可选
+    "redirectTimeoutMs":, // 跳转超时时间
+    "plugins":{ // 此服务启用的插件
+        "<id>":{ // 插件id
+            "<key>":"<value>" // 重载proxy.plugins[].args，插件的配置
+        }
+    }
+    "mockSrc":"", // Mock代码，用于服务未启用前的测试
+    "appId":"" // 关联的应用Id
+}
+----
+
+[source,js]
+.Service Subscription 服务订阅
+----
+{
+    "serviceId":"", // 关联的服务Id
+    "accountSecretId":"", // 关联的账号密钥Id
+    "expireTime":0L, // 过期时间，0表示永不过期
+    "auditPass":false // 是否审核通过，当服务为public时自动为true
+    "auditLog":"" // 审核记录
+}
+----
+
+[source,js]
+.Plugin Proxy插件
+----
+{
+    "id":"", // 插件Id
+    "code":"", // 插件Code
+    "remark":"", // 描述
+    "errorStrategy":"", // 错误策略，IGNORE_AND_NEXT/RETURN_ERROR
+    "maxFailureTimes":, // 最大失败次数，达到阀值后半开/开启断路器
+    "execTimeoutMs":,  // 最大执行时间
+    "resetTimeoutMs":,  // 多少时间后尝试关闭断路器
+    "args":{} // 插件配置(K-V)
+}
+----
+
+[source,js]
+.Proxy 代理网关
+----
+{
+    "appIds":["<id>"], // 代理的APP Ids
+    "http":{ // Http配置
+        "maxHeaderSize":, // 最大Header容量(B)
+        "maxPoolSize":, // 最大线程(EventLoop)池
+        "connectTimeoutMs":, // 连接超时时间
+        "proxyPort":, // 代理服务端口
+        "managementPort": // 管理服务端口
+    },
+    "redis":{ // Redis配置
+        "host":"",
+        "port":,
+        "auth":""
+    },
+    "plugins":[ // 加载的插件列表
+        {
+            "code":"", // 插件Code
+            "errorStrategy":"", // 重载Plugin，错误策略，IGNORE_AND_NEXT/RETURN_ERROR
+            "maxFailureTimes":, // 重载Plugin，最大失败次数，达到阀值后半开/开启断路器
+            "execTimeoutMs":,  // 重载Plugin，最大执行时间
+            "resetTimeoutMs":,  // 重载Plugin，多少时间后尝试关闭断路器
+            args:{ // 重载Plugin，参数
+            }
+        }
+    ],
+    "version":0L // 版本号，Proxy直接内容或引用内容的变更版本加1
+}
+----
+
+==== 部署架构
+
+image::images/deploy-architecture.png[]
+
+TEval的部署比较灵活，它的核心只有两个组件：Admin与Proxy，Admin要求全局只能有一个集群，可通过Nginx负载。
+Proxy支持Global模式，这种模式只有一个Proxy集群，服务提供方不用独立部署Proxy，由于Proxy性能足够高（10w以下的TPS）推荐此模式。
+如果对性能有特别要求或存在一定的网络延时，也可选Special模式，为特殊的服务提供方提供独立的Proxy集群。
+无法哪种方式只是配置上差异，对服务提供与调用方都是透明的。
+
+==== 可测试性架构
+
+由于平台涉及技术框架众多，对开发测试造成了比较大的困扰，相应的解决方案如下:
+
+* 合理划分项目组件，将组件拆分成一个个独立的可单测的微组件
+* 由于各个功能多半需要涉及外部服务联调，Mock无法解决外部服务对接是否正确，所以原则使用embedded工具：
+   Kafka -> https://github.com/chbatey/kafka-unit
+   Redis -> https://github.com/kstyrc/embedded-redis
+   Mysql -> H2
+
+=== 小服务框架设计
+
+TBD
+
+=== 插件设计
+
+TBD
