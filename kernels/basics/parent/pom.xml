@@ -15,6 +15,48 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
+    <developers>
+        <developer>
+            <name>蒋震宇</name>
+            <email>i@sunisle.org</email>
+            <organization>ecfront</organization>
+            <organizationUrl>http://www.ecfront.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>薛文毅</name>
+            <email>371148606@qq.com</email>
+        </developer>
+        <developer>
+            <name>李正先</name>
+            <email>lizhengxian2005@gmail.com</email>
+        </developer>
+        <developer>
+            <name>丁松</name>
+            <email>572853319@qq.com</email>
+        </developer>
+        <developer>
+            <name>孙豫蕾</name>
+            <email>syl_527@163.com</email>
+        </developer>
+        <developer>
+            <name>吴秀</name>
+            <email>641936581@qq.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/xtTech/TEval.git</connection>
+        <developerConnection>scm:https://github.com/xtTech/TEval.git</developerConnection>
+        <url>https://github.com/xtTech/TEval</url>
+    </scm>
+
     <properties>
         <teval.version>1.0.0-SNAPSHOT</teval.version>
         <maven.deploy.skip>false</maven.deploy.skip>
