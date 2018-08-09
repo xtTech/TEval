@@ -37,7 +37,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.twdata.maven</groupId>
             <artifactId>mojo-executor</artifactId>
@@ -161,35 +160,21 @@
             </build>
         </profile>
         <profile>
-            <id>sdk-adpt-ahc-4.5.3</id>
+            <id>sdk-adpt-org.apache.httpcomponents#httpclient</id>
             <properties>
-                <apache-httpclient.version>4.5.3</apache-httpclient.version>
-                <compile.path>org.apache.httpcomponents#httpclient#${apache-httpclient.version}</compile.path>
+                <client.version></client.version>
+                <compile.path>org.apache.httpcomponents#httpclient#${client.version}</compile.path>
             </properties>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
-                    <version>${apache-httpclient.version}</version>
+                    <version>${client.version}</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
-        <profile>
-            <id>sdk-adpt-ahc-4.5.6</id>
-            <properties>
-                <apache-httpclient.version>4.5.6</apache-httpclient.version>
-                <compile.path>org.apache.httpcomponents#httpclient#${apache-httpclient.version}</compile.path>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                    <version>${apache-httpclient.version}</version>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
+
     </profiles>
 
 </project>
