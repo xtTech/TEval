@@ -3,7 +3,6 @@ package com.tairanchina.teval.service.proxy;
 import com.tairanchina.teval.service.proxy.function.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.ext.healthchecks.HealthChecks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +31,7 @@ public class ProxyApplication extends AbstractVerticle {
         GlobalContainer.sharedData = vertx.sharedData();
         GlobalContainer.healthChecks = HealthChecks.create(vertx);
 
-        vertx.exceptionHandler(new Handler<Throwable>() {
-            @Override
-            public void handle(Throwable event) {
-                logger.error("Non-catch errors occur.",event.getCause());
-            }
-        });
+        vertx.exceptionHandler(event -> logger.error("Non-catch errors occur.", event.getCause()));
 
         ServerInfo serverInfo = new ServerInfo()
                 .setServerUrl(config().getString(FLAG_SERVER_URL, DEFAULT_SERVER_URL))
@@ -51,6 +45,7 @@ public class ProxyApplication extends AbstractVerticle {
                 .compose(v -> StartMonitorFunction.inst().apply(GlobalContainer.proxyConfig.getHttp().getManagementPort(), vertx))
                 .compose(v -> SetRedisClientFunction.inst().apply(GlobalContainer.proxyConfig.getRedis(), vertx))
                 .compose(v -> StartProxyServiceFunction.inst().apply(GlobalContainer.proxyConfig.getHttp(), vertx))
+                .compose(v -> RegisterFunction.inst().apply(serverInfo, vertx))
                 .setHandler(ar -> {
                     if (ar.failed()) {
                         logger.error("Startup Failure.", ar.cause());
@@ -60,9 +55,6 @@ public class ProxyApplication extends AbstractVerticle {
                         logger.info("Startup Successful.");
                     }
                 });
-
-        // Register Proxy Instance
-        // TODO
     }
 
     public void stop(Future<Void> stopFuture) {
