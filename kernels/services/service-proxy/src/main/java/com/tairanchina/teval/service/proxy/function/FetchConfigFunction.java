@@ -1,9 +1,9 @@
 package com.tairanchina.teval.service.proxy.function;
 
 import com.tairanchina.teval.common.dto.ProxyConfig;
-import com.tairanchina.teval.plugin.template.proxy.filter.ProxyFilter;
+import com.tairanchina.teval.plugin.template.proxy.filter.ProxyPlugin;
 import com.tairanchina.teval.service.proxy.GlobalContainer;
-import com.tairanchina.teval.service.proxy.handler.FilterHandler;
+import com.tairanchina.teval.service.proxy.handler.PluginHandler;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -13,8 +13,8 @@ import io.vertx.core.json.JsonObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FetchConfigFunction extends AbsProxyFunction<ServerInfo, Void> {
 
@@ -29,7 +29,8 @@ public class FetchConfigFunction extends AbsProxyFunction<ServerInfo, Void> {
 
     @Override
     protected void apply(ServerInfo serverInfo, Vertx vertx, Future<Void> resultFuture) throws MalformedURLException {
-        URL url = new URL("http://" + serverInfo.getServerUrl());
+        URL url = new URL(serverInfo.getServerUrl());
+        // TODO proxySecret in header
         ConfigStoreOptions httpStore = new ConfigStoreOptions()
                 .setType("http")
                 .setConfig(new JsonObject()
@@ -41,8 +42,8 @@ public class FetchConfigFunction extends AbsProxyFunction<ServerInfo, Void> {
             logger.info("Proxy Config was changed, reload config & apis.");
             // 配置有变更，重新获取APIs
             FetchAPIsFunction.inst().apply(serverInfo, vertx);
-            GlobalContainer.proxyConfig = change.getNewConfiguration().mapTo(ProxyConfig.class);
-            setFilterTaskHandlers(GlobalContainer.proxyConfig.getFilters(), vertx);
+            FetchAuthFunction.inst().apply(serverInfo, vertx);
+            initOrModifyConfig(change.getNewConfiguration(), vertx);
         });
         ConfigRetriever.getConfigAsFuture(retriever)
                 .setHandler(ar -> {
@@ -50,8 +51,7 @@ public class FetchConfigFunction extends AbsProxyFunction<ServerInfo, Void> {
                         resultFuture.fail(ar.cause());
                     } else {
                         try {
-                            GlobalContainer.proxyConfig = ar.result().mapTo(ProxyConfig.class);
-                            setFilterTaskHandlers(GlobalContainer.proxyConfig.getFilters(), vertx);
+                            initOrModifyConfig(ar.result(), vertx);
                             resultFuture.complete();
                         } catch (IllegalArgumentException e) {
                             logger.error("Config parse error.", e);
@@ -61,18 +61,23 @@ public class FetchConfigFunction extends AbsProxyFunction<ServerInfo, Void> {
                 });
     }
 
-    private void setFilterTaskHandlers(Map<String, ProxyConfig.FilterConfig> filterTaskConfig, Vertx vertx) {
-        GlobalContainer.filterHandlers = filterTaskConfig.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, i -> {
-                    ProxyFilter proxyFilter = null;
-                    try {
-                        proxyFilter = (ProxyFilter) Class.forName(FLAG_FILTER_PATH + i.getValue().getId() + ".PluginFilter").newInstance();
-                    } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-                        logger.error("Load Filter Task Error " + FLAG_FILTER_PATH + i.getValue().getId() + ".PluginFilter", e);
-                        System.exit(1);
-                    }
-                    return new FilterHandler(proxyFilter, i.getValue(), vertx);
-                }));
+    private void initOrModifyConfig(JsonObject config, Vertx vertx) {
+        ProxyConfig proxyConfig = config.mapTo(ProxyConfig.class);
+        Map<String, PluginHandler> pluginHandlers = new LinkedHashMap<>();
+        for (ProxyConfig.PluginConfig pluginConfig : proxyConfig.getPlugins()) {
+            ProxyPlugin<?> proxyPlugin = null;
+            try {
+                proxyPlugin = (ProxyPlugin) Class.forName(FLAG_FILTER_PATH + pluginConfig.getCode() + ".PluginMain").newInstance();
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                logger.error("Load Plugin Error " + FLAG_FILTER_PATH + pluginConfig.getCode() + ".PluginMain", e);
+                System.exit(1);
+            }
+            // Convert java model by args
+            pluginConfig.setArgs(proxyPlugin.parseConfig(pluginConfig.getArgs()));
+            pluginHandlers.put(pluginConfig.getCode(), new PluginHandler(proxyPlugin, pluginConfig, vertx));
+        }
+        GlobalContainer.pluginHandlers = pluginHandlers;
+        GlobalContainer.proxyConfig = proxyConfig;
     }
 
 

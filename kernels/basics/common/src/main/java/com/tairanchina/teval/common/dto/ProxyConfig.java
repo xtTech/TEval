@@ -1,7 +1,7 @@
 package com.tairanchina.teval.common.dto;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
 public class ProxyConfig {
 
@@ -9,11 +9,21 @@ public class ProxyConfig {
     private static final int DEFAULT_MAX_POOL_SIZE = 5;
     private static final int DEFAULT_CONNECT_TIMEOUT_MS = 60000;
 
+    private Set<String> serviceIds;
     private HttpConfig http;
     private RedisConfig redis;
-    private Map<String, FilterConfig> filters;
+    private List<PluginConfig> plugins;
 
     private long apiVersion;
+
+    public Set<String> getServiceIds() {
+        return serviceIds;
+    }
+
+    public ProxyConfig setServiceIds(Set<String> serviceIds) {
+        this.serviceIds = serviceIds;
+        return this;
+    }
 
     public HttpConfig getHttp() {
         return http;
@@ -33,12 +43,12 @@ public class ProxyConfig {
         return this;
     }
 
-    public Map<String, FilterConfig> getFilters() {
-        return filters;
+    public List<PluginConfig> getPlugins() {
+        return plugins;
     }
 
-    public ProxyConfig setFilters(Map<String, FilterConfig> filters) {
-        this.filters = filters;
+    public ProxyConfig setPlugins(List<PluginConfig> plugins) {
+        this.plugins = plugins;
         return this;
     }
 
@@ -137,7 +147,7 @@ public class ProxyConfig {
         }
     }
 
-    public static class FilterConfig {
+    public static class PluginConfig {
 
         public static final String STRATEGY_IGNORE_AND_NEXT = "IGNORE_AND_NEXT";
         // TODO
@@ -149,20 +159,20 @@ public class ProxyConfig {
         private static final int DEFAULT_EXECT_TIMEOUT_MS = 2000;
         private static final int DEFAULT_RESET_TIMEOUT_MS = 30000;
 
-        private String id;
+        private String code;
         private String errorStrategy = STRATEGY_IGNORE_AND_NEXT;
-        private Map<String, String> args = new HashMap<>();
+        private Object args;
 
         private int maxFailureTimes = DEFAULT_MAX_FAILURE_TIMES;
         private int execTimeoutMs = DEFAULT_EXECT_TIMEOUT_MS;
         private int resetTimeoutMs = DEFAULT_RESET_TIMEOUT_MS;
 
-        public String getId() {
-            return id;
+        public String getCode() {
+            return code;
         }
 
-        public FilterConfig setId(String id) {
-            this.id = id;
+        public PluginConfig setCode(String code) {
+            this.code = code;
             return this;
         }
 
@@ -170,16 +180,16 @@ public class ProxyConfig {
             return errorStrategy;
         }
 
-        public FilterConfig setErrorStrategy(String errorStrategy) {
+        public PluginConfig setErrorStrategy(String errorStrategy) {
             this.errorStrategy = errorStrategy;
             return this;
         }
 
-        public Map<String, String> getArgs() {
+        public Object getArgs() {
             return args;
         }
 
-        public FilterConfig setArgs(Map<String, String> args) {
+        public PluginConfig setArgs(Object args) {
             this.args = args;
             return this;
         }
@@ -188,7 +198,7 @@ public class ProxyConfig {
             return maxFailureTimes;
         }
 
-        public FilterConfig setMaxFailureTimes(int maxFailureTimes) {
+        public PluginConfig setMaxFailureTimes(int maxFailureTimes) {
             this.maxFailureTimes = maxFailureTimes;
             return this;
         }
@@ -197,7 +207,7 @@ public class ProxyConfig {
             return execTimeoutMs;
         }
 
-        public FilterConfig setExecTimeoutMs(int execTimeoutMs) {
+        public PluginConfig setExecTimeoutMs(int execTimeoutMs) {
             this.execTimeoutMs = execTimeoutMs;
             return this;
         }
@@ -206,7 +216,7 @@ public class ProxyConfig {
             return resetTimeoutMs;
         }
 
-        public FilterConfig setResetTimeoutMs(int resetTimeoutMs) {
+        public PluginConfig setResetTimeoutMs(int resetTimeoutMs) {
             this.resetTimeoutMs = resetTimeoutMs;
             return this;
         }

@@ -1,7 +1,7 @@
 package com.tairanchina.teval.service.proxy.function;
 
 import com.tairanchina.teval.common.dto.ProxyConfig;
-import com.tairanchina.teval.plugin.template.proxy.filter.FilterContext;
+import com.tairanchina.teval.plugin.template.proxy.filter.PluginContext;
 import com.tairanchina.teval.service.proxy.GlobalContainer;
 import com.tairanchina.teval.service.proxy.handler.RequestProxyHandler;
 import com.tairanchina.teval.service.proxy.handler.ResponseProxyHandler;
@@ -32,32 +32,33 @@ public class StartProxyServiceFunction extends AbsProxyFunction<ProxyConfig.Http
                                 logger.warn(ar.cause().getMessage());
                                 req.response().setStatusCode(404).end();
                             } else {
-                                FilterContext context = ar.result();
-                                logger.trace("【" + context.getTraceId() + "】Redirect request...");
-                                HttpClientRequest c_req = GlobalContainer.httpClient.request(
+                                PluginContext context = ar.result();
+                                logger.trace("[" + context.getTraceId() + "] Redirect request...");
+                                HttpClientRequest redirectReq = GlobalContainer.httpClient.request(
                                         req.method(),
                                         context.getRequest().getPort(),
                                         context.getRequest().getHost(),
-                                        context.getRequest().getPath() + "?" + context.getRequest().queryToString(), c_res -> {
-                                            logger.trace("【" + context.getTraceId() + "】Redirect response: " + c_res.statusCode());
+                                        context.getRequest().getPath() + "?" + context.getRequest().queryToString(),
+                                        redirectRes -> {
+                                            logger.trace("[" + context.getTraceId() + "] Redirect response: " + redirectRes.statusCode());
                                             req.response().setChunked(true);
-                                            req.response().setStatusCode(c_res.statusCode());
-                                            req.response().headers().setAll(c_res.headers());
-                                            c_res.handler(data -> req.response().write(data));
-                                            c_res.endHandler(v ->
+                                            req.response().setStatusCode(redirectRes.statusCode());
+                                            req.response().headers().setAll(redirectRes.headers());
+                                            redirectRes.handler(data -> req.response().write(data));
+                                            redirectRes.endHandler(v ->
                                                     responseProxyHandler.handle(context).setHandler(respAr -> {
                                                         if (respAr.failed()) {
-                                                            logger.warn("【" + context.getTraceId() + "】Callback response fail", respAr.cause());
+                                                            logger.warn("[" + context.getTraceId() + "] Callback response fail.", respAr.cause());
                                                             req.response().setStatusCode(500).end("");
                                                         } else {
                                                             req.response().end();
                                                         }
                                                     }));
                                         });
-                                c_req.setChunked(true);
-                                c_req.headers().setAll(context.getRequest().getHeaders());
-                                req.handler(c_req::write);
-                                req.endHandler(v -> c_req.end());
+                                redirectReq.setChunked(true);
+                                redirectReq.headers().setAll(context.getRequest().getHeaders());
+                                req.handler(redirectReq::write);
+                                req.endHandler(v -> redirectReq.end());
                             }
                         }))
                 .listen(httpConfig.getProxyPort(), resultFuture.completer());

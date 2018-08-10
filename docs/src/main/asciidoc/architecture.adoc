@@ -180,9 +180,7 @@ image::images/kernel-model.png[]
     "redirectRemoveCookiesOpt":["<key>"], // 跳转时要删除的Cookies，可选
     "redirectTimeoutMs":, // 跳转超时时间
     "plugins":{ // 此服务启用的插件
-        "<id>":{ // 插件id
-            "<key>":"<value>" // 重载proxy.plugins[].args，插件的配置
-        }
+        "<id>":"" // 插件id
     }
     "mockSrc":"", // Mock代码，用于服务未启用前的测试
     "appId":"" // 关联的应用Id

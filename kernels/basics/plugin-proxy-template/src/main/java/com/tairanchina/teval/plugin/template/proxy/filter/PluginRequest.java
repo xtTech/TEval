@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class FilterRequest {
+public class PluginRequest {
 
     private Function<String, String[]> cookieLazyFetchProcessor;
 
@@ -18,7 +18,7 @@ public class FilterRequest {
     private Map<String, String> query;
     private Map<String, String> headers;
 
-    public FilterRequest(Function<String, String[]> cookieLazyFetchProcessor) {
+    public PluginRequest(Function<String, String[]> cookieLazyFetchProcessor) {
         this.cookieLazyFetchProcessor = cookieLazyFetchProcessor;
     }
 
@@ -41,7 +41,7 @@ public class FilterRequest {
         return remoteIP;
     }
 
-    public FilterRequest setRemoteIP(String remoteIP) {
+    public PluginRequest setRemoteIP(String remoteIP) {
         this.remoteIP = remoteIP;
         return this;
     }
@@ -50,7 +50,7 @@ public class FilterRequest {
         return protocol;
     }
 
-    public FilterRequest setProtocol(String protocol) {
+    public PluginRequest setProtocol(String protocol) {
         this.protocol = protocol;
         return this;
     }
@@ -59,7 +59,7 @@ public class FilterRequest {
         return host;
     }
 
-    public FilterRequest setHost(String host) {
+    public PluginRequest setHost(String host) {
         this.host = host;
         return this;
     }
@@ -68,7 +68,7 @@ public class FilterRequest {
         return port;
     }
 
-    public FilterRequest setPort(int port) {
+    public PluginRequest setPort(int port) {
         this.port = port;
         return this;
     }
@@ -77,7 +77,7 @@ public class FilterRequest {
         return path;
     }
 
-    public FilterRequest setPath(String path) {
+    public PluginRequest setPath(String path) {
         this.path = path;
         return this;
     }
@@ -86,7 +86,7 @@ public class FilterRequest {
         return query;
     }
 
-    public FilterRequest setQuery(Map<String, String> query) {
+    public PluginRequest setQuery(Map<String, String> query) {
         this.query = query;
         return this;
     }
@@ -95,7 +95,7 @@ public class FilterRequest {
         return headers;
     }
 
-    public FilterRequest setHeaders(Map<String, String> headers) {
+    public PluginRequest setHeaders(Map<String, String> headers) {
         this.headers = headers;
         return this;
     }
