@@ -27,5 +27,6 @@
         <module>kernels/sdks/sdk-maven-plugin</module>
         <module>examples/loan</module>
         <module>examples/special-list</module>
+        <module>examples/service-crypto</module>
     </modules>
 </project>

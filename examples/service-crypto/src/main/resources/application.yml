@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: service-crypto
+server:
+  port: 8888
