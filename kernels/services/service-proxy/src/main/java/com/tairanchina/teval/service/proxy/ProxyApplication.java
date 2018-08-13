@@ -15,30 +15,37 @@ public class ProxyApplication extends AbstractVerticle {
     private static final String FLAG_PROXY_ID = "proxyId";
     private static final String FLAG_PROXY_SECRET = "proxySecret";
 
-    private static final String DEFAULT_SERVER_URL = "feval.tairanchina.com";
+    private static final String DEFAULT_SERVER_URL = "http://feval.tairanchina.com/admin";
     private static final String DEFAULT_PROXY_ID = "default";
+
+    {
+        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+        System.setProperty("hazelcast.logging.type", "slf4j");
+    }
 
     @Override
     public void start(Future<Void> startFuture) {
-        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
-        System.setProperty("hazelcast.logging.type", "slf4j");
 
         logger.info("Starting Proxy.");
 
         GlobalContainer.sharedData = vertx.sharedData();
         GlobalContainer.healthChecks = HealthChecks.create(vertx);
 
+        vertx.exceptionHandler(event -> logger.error("Non-catch errors occur.", event.getCause()));
+
         ServerInfo serverInfo = new ServerInfo()
                 .setServerUrl(config().getString(FLAG_SERVER_URL, DEFAULT_SERVER_URL))
                 .setProxyId(config().getString(FLAG_PROXY_ID, DEFAULT_PROXY_ID))
-                .setProxySecret(config().getString(FLAG_PROXY_SECRET, ""));
+                .setProxySecret(config().getString(FLAG_PROXY_SECRET));
 
         startFuture.compose(v -> FetchConfigFunction.inst().apply(serverInfo, vertx))
                 .compose(v -> SetHttpClientFunction.inst().apply(GlobalContainer.proxyConfig.getHttp(), vertx))
                 .compose(v -> FetchAPIsFunction.inst().apply(serverInfo, vertx))
+                .compose(v -> FetchAuthFunction.inst().apply(serverInfo, vertx))
                 .compose(v -> StartMonitorFunction.inst().apply(GlobalContainer.proxyConfig.getHttp().getManagementPort(), vertx))
                 .compose(v -> SetRedisClientFunction.inst().apply(GlobalContainer.proxyConfig.getRedis(), vertx))
                 .compose(v -> StartProxyServiceFunction.inst().apply(GlobalContainer.proxyConfig.getHttp(), vertx))
+                .compose(v -> RegisterFunction.inst().apply(serverInfo, vertx))
                 .setHandler(ar -> {
                     if (ar.failed()) {
                         logger.error("Startup Failure.", ar.cause());

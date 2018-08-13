@@ -58,14 +58,14 @@ Proxy会通过APIs Config Fetch获取服务的授权关系（AccountSecret -> Se
 
 TEval需要在服务调用时加入身份参数到请求头部，为减少对现有服务的改造，SDK会扩展或修改主流网络调用工具，加入全局Header信息，
 SDK提供多语言版本，Java下支持HttpClient和OKHttp的主流版本。
-JVM中为避免包冲突，SDK的依赖包会用maven-shade-plugin的relocation重命名包名。
+JVM中为避免包冲突，SDK被设计成无三方依赖。
 
 image::images/sdk-architecture.png[]
 
 以HttpClient为例，SDK会重写CloseableHttpClient下的execute方法，服务调用者发布请求时会在这个重写的execute中执行请求检查：
 
-. 如果不存在配置信息说明是第一次调用，获取配置下AccountSecret并向Admin获取对应的Proxy实例IP列表和要代理的URL，此操作会定时轮询以实现配置更新
-. 比较当前请求的URL是否需要代理，如果不需要直接跳过，如果需要则改写请求Host为Proxy实例IP（IP列表轮询）并在Header中加上AccountSecret
+. 如果不存在配置信息说明是第一次调用，获取配置下AppId和AppSecret并向Admin获取对应的Proxy实例IP列表和要代理的URL，此操作会定时轮询以实现配置更新
+. 比较当前请求的URL是否需要代理，如果不需要直接跳过，如果需要则改写请求Host为Proxy实例IP（IP列表轮询）并在Header中加上AppId和AppSecret等信息
 . 如果改写的IP ConnectTimeout 则换另一个IP，直到成功或IP轮询结束
 
 ==== Admin设计
@@ -180,9 +180,7 @@ image::images/kernel-model.png[]
     "redirectRemoveCookiesOpt":["<key>"], // 跳转时要删除的Cookies，可选
     "redirectTimeoutMs":, // 跳转超时时间
     "plugins":{ // 此服务启用的插件
-        "<id>":{ // 插件id
-            "<key>":"<value>" // 重载proxy.plugins[].args，插件的配置
-        }
+        "<id>":"" // 插件id
     }
     "mockSrc":"", // Mock代码，用于服务未启用前的测试
     "appId":"" // 关联的应用Id

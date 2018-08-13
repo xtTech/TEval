@@ -21,11 +21,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.tairanchina.teval</groupId>
-            <artifactId>sdk-jvm</artifactId>
-            <version>${teval.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.tairanchina.csp.dew</groupId>
             <artifactId>boot-starter</artifactId>
         </dependency>
@@ -37,6 +32,14 @@
                 <groupId>com.tairanchina.teval</groupId>
                 <artifactId>tsdk-maven-plugin</artifactId>
                 <version>${teval.version}</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>inject</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -6,7 +6,7 @@ public class APIConfig {
 
     private static final int DEFAULT_REDIRECT_TIMEOUT_MS = 60000;
 
-    private String proxyAppId;
+    private String serviceId;
     private String proxyMethod;
     private String proxyPath;
     private Map<String, Set<String>> proxyQueryOpt = new HashMap<>();
@@ -21,15 +21,15 @@ public class APIConfig {
     private Map<String, String> redirectAddCookiesOpt = new HashMap<>();
     private Set<String> redirectRemoveCookiesOpt = new HashSet<>();
     private int redirectTimeoutMs = DEFAULT_REDIRECT_TIMEOUT_MS;
-    private List<String> filterIds;
-    private String mockSrc;
+    private Map<String,Object> plugins=new HashMap<>();
+    private String mockSrc="";
 
-    public String getProxyAppId() {
-        return proxyAppId;
+    public String getServiceId() {
+        return serviceId;
     }
 
-    public APIConfig setProxyAppId(String proxyAppId) {
-        this.proxyAppId = proxyAppId;
+    public APIConfig setServiceId(String serviceId) {
+        this.serviceId = serviceId;
         return this;
     }
 
@@ -159,12 +159,12 @@ public class APIConfig {
         return this;
     }
 
-    public List<String> getFilterIds() {
-        return filterIds;
+    public Map<String, Object> getPlugins() {
+        return plugins;
     }
 
-    public APIConfig setFilterIds(List<String> filterIds) {
-        this.filterIds = filterIds;
+    public APIConfig setPlugins(Map<String, Object> plugins) {
+        this.plugins = plugins;
         return this;
     }
 

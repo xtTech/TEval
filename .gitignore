@@ -8,6 +8,8 @@ tmp
 
 target/
 
+*.class
+
 .mvn/
 mvnw
 mvnw.cmd

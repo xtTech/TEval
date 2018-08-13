@@ -1,7 +1,9 @@
 package com.tairanchina.teval.service.proxy;
 
+import com.tairanchina.teval.plugin.proxy.filter.mock.MockConfig;
 import com.tairanchina.teval.service.proxy.function.*;
 import com.tairanchina.teval.service.proxy.utils.HttpHelper;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientRequest;
@@ -33,7 +35,7 @@ public class FunctionsTest {
     private static Vertx vertx;
 
     private ServerInfo serverInfo = new ServerInfo()
-            .setServerUrl("127.0.0.1:" + CONFIG_SERVER_PORT)
+            .setServerUrl("http://127.0.0.1:" + CONFIG_SERVER_PORT)
             .setProxyId(PROXY_ID)
             .setProxySecret(PROXY_SECRET);
 
@@ -47,6 +49,14 @@ public class FunctionsTest {
                                 .setEnabled(true)));
         GlobalContainer.sharedData = vertx.sharedData();
         GlobalContainer.healthChecks = HealthChecks.create(vertx);
+
+        vertx.exceptionHandler(new Handler<Throwable>() {
+            @Override
+            public void handle(Throwable event) {
+                event.getCause().printStackTrace();
+            }
+        });
+
         new MockRedisServer();
         // Start Config Server
         vertx.createHttpServer().requestHandler(req -> {
@@ -57,6 +67,8 @@ public class FunctionsTest {
             switch (req.path()) {
                 case "/proxy/config":
                     req.response().end("{\n" +
+                            "    \"serviceIds\":[\"ucenter\"],\n" +
+                            "    \"apiVersion\":1,\n" +
                             "    \"http\":{\n" +
                             "        \"proxyPort\":8080,\n" +
                             "        \"managementPort\":9000\n" +
@@ -65,24 +77,30 @@ public class FunctionsTest {
                             "        \"host\":\"localhost\",\n" +
                             "        \"port\":6379\n" +
                             "    },\n" +
-                            "    \"filters\":{\n" +
-                            "        \"mock\":{\n" +
-                            "            \"id\":\"mock\"\n" +
-                            "        }\n" +
-                            "    }\n" +
+                            "    \"plugins\":[\n" +
+                            "        {\"code\":\"mock\",\"args\":{\"fieldA\":\"proxyDef\",\"fieldB\":\"proxyDef\"}}" +
+                            "      ]\n" +
                             "}");
                     break;
                 case "/proxy/apis":
                     req.response().end("[\n" +
                             "    {\n" +
-                            "        \"proxyAppId\":\"ucenter\",\n" +
+                            "        \"serviceId\":\"ucenter\",\n" +
                             "        \"proxyMethod\":\"GET\",\n" +
                             "        \"proxyPath\":\"/user/{userId}\",\n" +
                             "        \"redirectProtocol\":\"http\",\n" +
                             "        \"redirectHost\":\"127.0.0.1\",\n" +
                             "        \"redirectPort\":" + REDIRECT_SERVER_PORT + ",\n" +
                             "        \"redirectPath\":\"/user/{userId}\",\n" +
-                            "        \"filterTaskIds\":[\"mock\"]\n" +
+                            "        \"plugins\":{\"mock\":{\"fieldA\":\"overwrite\"}}\n" +
+                            "    }\n" +
+                            "]");
+                    break;
+                case "/proxy/auth":
+                    req.response().end("[\n" +
+                            "    {\n" +
+                            "        \"appId\":\"app_id_test\",\n" +
+                            "        \"appSecret\":\"app_secret_test\"\n" +
                             "    }\n" +
                             "]");
                     break;
@@ -113,11 +131,14 @@ public class FunctionsTest {
         Async async = context.async();
         FetchConfigFunction.inst().apply(serverInfo, vertx)
                 .setHandler(ar -> {
+                    if (ar.failed()) {
+                        ar.cause().printStackTrace();
+                    }
                     context.assertTrue(ar.succeeded());
                     // GlobalContainer.proxyConfig 变量拼装检查
-                    context.assertEquals(5, GlobalContainer.proxyConfig.getFilters().get("mock").getMaxFailureTimes());
-                    // GlobalContainer.filterHandlers 变量拼装检查
-                    context.assertTrue(GlobalContainer.filterHandlers.containsKey("mock"));
+                    context.assertEquals(5, GlobalContainer.proxyConfig.getPlugins().get(0).getMaxFailureTimes());
+                    // GlobalContainer.pluginHandlers 变量拼装检查
+                    context.assertTrue(GlobalContainer.pluginHandlers.containsKey("mock"));
                     async.complete();
                 });
     }
@@ -133,12 +154,25 @@ public class FunctionsTest {
         FetchAPIsFunction.inst().apply(serverInfo, vertx).setHandler(ar -> {
             context.assertEquals(1, GlobalContainer.apiConfig.size());
             context.assertEquals("/user/{userId}", GlobalContainer.apiConfig.get(0).getRedirectPath());
+            context.assertEquals("overwrite", ((MockConfig) GlobalContainer.apiConfig.get(0).getPlugins().get("mock")).getFieldA());
+            context.assertEquals("proxyDef", ((MockConfig) GlobalContainer.apiConfig.get(0).getPlugins().get("mock")).getFieldB());
+
             async.complete();
         });
     }
 
     @Test
-    public void test04SetRedisClient(TestContext context) {
+    public void test04FetchAuth(TestContext context) {
+        Async async = context.async();
+        FetchAuthFunction.inst().apply(serverInfo, vertx).setHandler(ar -> {
+            context.assertEquals(1, GlobalContainer.authConfig.size());
+            context.assertEquals("app_secret_test", GlobalContainer.authConfig.get("app_id_test").getAppSecret());
+            async.complete();
+        });
+    }
+
+    @Test
+    public void test05SetRedisClient(TestContext context) {
         Async async = context.async();
         SetRedisClientFunction.inst().apply(GlobalContainer.proxyConfig.getRedis(), vertx).setHandler(ar -> {
             GlobalContainer.redisClient.echo("ha", ret -> {
@@ -149,7 +183,7 @@ public class FunctionsTest {
     }
 
     @Test
-    public void test05StartMonitorFunction(TestContext context) {
+    public void test06StartMonitorFunction(TestContext context) {
         Async async = context.async(2);
         StartMonitorFunction.inst().apply(GlobalContainer.proxyConfig.getHttp().getManagementPort(), vertx).setHandler(ar -> {
             GlobalContainer.httpClient.getNow(GlobalContainer.proxyConfig.getHttp().getManagementPort(), "127.0.0.1", "/health", event -> {
@@ -170,19 +204,20 @@ public class FunctionsTest {
     }
 
     @Test
-    public void test06StartProxyService(TestContext context) {
+    public void test07StartProxyService(TestContext context) {
         Async async = context.async();
         StartProxyServiceFunction.inst().apply(GlobalContainer.proxyConfig.getHttp(), vertx).setHandler(ar -> {
-            HttpClientRequest get= GlobalContainer.httpClient.get(GlobalContainer.proxyConfig.getHttp().getProxyPort(), "127.0.0.1", "/user/11", event -> {
+            HttpClientRequest get = GlobalContainer.httpClient.get(GlobalContainer.proxyConfig.getHttp().getProxyPort(), "127.0.0.1", "/user/11", event -> {
                 event.bodyHandler(h -> {
                     context.assertEquals("OK", h.toString());
                     async.complete();
                 });
             });
-            get.headers().add("X-Teval-AppId","ucenter");
+            get.headers().add("X-TEval-App-Id", "app_id_test");
+            get.headers().add("X-TEval-App-Secret", "app_secret_test");
+            get.headers().add("X-TEval-Service-Id", "ucenter");
             get.end();
         });
     }
-
 
 }
