@@ -28,5 +28,4 @@
         <module>examples/loan</module>
         <module>examples/special-list</module>
     </modules>
-
 </project>

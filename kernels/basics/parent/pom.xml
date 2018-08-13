@@ -85,6 +85,11 @@
                 <artifactId>sdk-jvm</artifactId>
                 <version>${teval.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.tairanchina.teval</groupId>
+                <artifactId>service-mail</artifactId>
+                <version>${teval.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -1,4 +1,8 @@
 spring:
   application:
     name: teval-service-admin
+  profiles:
+    active: dev
+
+
 

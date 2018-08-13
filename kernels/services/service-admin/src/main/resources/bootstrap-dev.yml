@@ -1,14 +1,49 @@
 spring:
   cloud:
     config:
-      discovery:
-        service-id: config
-        enabled: true
-      username: tr
-      password: 123456
-      label: 1.0.0
+      enabled: false
 
 eureka:
   client:
-    serviceUrl:
-      defaultZone: http://trc:tairan777Test@eureka.fengdai.org:30000/eureka
+    enabled: false
+
+# 邮件发送配置
+email:
+  163:
+    host: "smtp.163.com"
+    port: "465"
+    auth: true
+    protocol: "smtp"
+    from: "hduds1314kx@163.com"
+    authCode: "qwerdf666"
+    fromName: "偶you no..."
+    ssl: true
+    to: "572853319@qq.com"
+    header: "163邮箱测试"
+    subject: "《163邮箱测试》"
+    cc: false
+    ccs: "hduds1314kx@163.com,hduds1314kx@sina.com"
+    bcc: false
+    bccs: "fgx6915@dingtalk.com,wangnannan8961@dingtalk.com"
+    contentType: "HTML"
+    content: "<p style='text-indent:2em;font-size:16px'>你好！恭喜你获得一次免费抽奖资格 ！<a href='http://www.baidu.com'>点这里</a> 查看详情</p>"
+    attachFileNames: ["C:\\Users\\hzds\\Desktop\\1533264303.jpg","C:\\Users\\hzds\\Desktop\\2.0-3.0升级指南.docx"]
+  qq:
+    host: "smtp.qq.com"
+    port: "465"
+    auth: true
+    protocol: "smtp"
+    from: "572853319@qq.com"
+    authCode: "hhkgbnvvgvnebeei"
+    fromName: "偶you no..."
+    ssl: true
+    to: "hduds1314kx@163.com"
+    header: "QQ邮箱测试"
+    subject: "《QQ邮箱测试》"
+    cc: false
+    ccs: "hduds1314kx@163.com,hduds1314kx@sina.com"
+    bcc: false
+    bccs: "fgx6915@dingtalk.com,wangnannan8961@dingtalk.com"
+    contentType: "HTML"
+    content: "<p style='text-indent:2em;font-size:16px'>你好！恭喜你获得一次免费抽奖资格 ！<a href='http://www.baidu.com'>点这里</a> 查看详情</p>"
+    attachFileNames: ["C:\\Users\\hzds\\Desktop\\1533264303.jpg","C:\\Users\\hzds\\Desktop\\2.0-3.0升级指南.docx"]
