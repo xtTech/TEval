@@ -1,7 +1,7 @@
 <template>
     <div id="sidebar">
         <Sider :style="{position: 'fixed', height: '100vh', left: 0, overflow: 'auto'}">
-            <Menu :active-name="activeNavName" :open-names="openNames" width="200" ref="menus"
+            <Menu :active-name="activeNavName" theme="light" :open-names="openNames" width="200" ref="menus"
                   @on-select="goToPage">
                 <Submenu name="account">
                     <template slot="title">
@@ -20,6 +20,7 @@
                     <MenuItem name="service-publish">发布服务</MenuItem>
                 </Submenu>
             </Menu>
+            <Button type="dashed" size="large" class="btn-custom-add-fn" align="center">添加功能插件</Button>
         </Sider>
     </div>
 </template>
@@ -58,45 +59,13 @@ export default {
 };
 </script>
 <style lang="scss">
-    /*#sidebar {*/
-        /*.ivu-layout-sider{*/
-            /*width: 50px!important;*/
-            /*min-width: 50px!important;*/
-            /*max-width: 50px!important;*/
-            /*flex: 0 0 50px!important;*/
-            /*.ivu-menu-item{*/
-                /*.ivu-icon{*/
-                    /*margin-right: 0;*/
-                    /*font-size: 20px;*/
-                    /*& + span{*/
-                        /*display: none;*/
-                    /*}*/
-                /*}*/
-            /*}*/
-            /*.ivu-menu-submenu-title{*/
-                /*& > .ivu-icon{*/
-                    /*margin-right: 0;*/
-                    /*font-size: 20px;*/
-                    /*& + span{*/
-                        /*display: none;*/
-                        /*& + i{*/
-                            /*display: none;*/
-                        /*}*/
-                    /*}*/
-                /*}*/
-                /*& + .ivu-menu{*/
-                    /*position: absolute;*/
-                    /*width: 200px;*/
-                    /*z-index: 1;*/
-                /*}*/
-            /*}*/
-            /*.ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title{*/
-                /*padding: 14px 0px;*/
-                /*text-align: center;*/
-            /*}*/
-        /*}*/
-    /*}*/
-
+    .btn-custom-add-fn{
+        margin: 10px;
+        align-self: center;
+        align-items: center;
+        width: 90%;
+        padding: 0;
+    }
     #page-admin {
         .page-body{
             // z-index: -1;

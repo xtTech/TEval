@@ -28,6 +28,14 @@ const router = new VueRouter({
                         title: '基本资料'
                     },
                     component: (resolve) => require(['./views/account/basic.vue'], resolve)
+                },
+                {
+                    path: 'pwd',
+                    name: 'account-pwd',
+                    meta: {
+                        title: '修改密码'
+                    },
+                    component: (resolve) => require(['./views/account/pwd.vue'], resolve)
                 }
             ]
         }

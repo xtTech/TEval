@@ -6,8 +6,6 @@
         <div class="header-menu">
         </div>
         <div class="header-right">
-
-
             <Menu mode="horizontal" theme="dark" active-name="1" class="menu-custom">
                 <MenuItem name="1">
                     <Icon type="ios-paper" />
@@ -32,23 +30,40 @@
                         <MenuItem name="3-5">流失用户</MenuItem>
                     </MenuGroup>
                 </Submenu>
+                <MenuItem name="4">
+                    <Icon type="ios-contact" />
+                    注册/登录
+                </MenuItem>
+                <Submenu name="5">
+                    <template slot="title">
+                        <Icon type="ios-contact" />
+                        lizhengxian@gmail.com
+                    </template>
+                    <MenuGroup title="个人">
+                        <MenuItem name="3-1">我的资料</MenuItem>
+                    </MenuGroup>
+                    <MenuGroup title="操作">
+                        <MenuItem name="3-4">修改密码</MenuItem>
+                        <MenuItem name="3-5">退出登录</MenuItem>
+                    </MenuGroup>
+                </Submenu>
             </Menu>
 
-            <template v-if="loginData">
-                <Dropdown @on-click="dropdownClicked" trigger="click" style="margin-left: 20px;text-align: left">
-                    <a href="javascript:void(0)">
-                        {{hasValue(loginData.nickName) ? loginData.nickName : '137****2123'}}
-                        <Icon type="arrow-down-b"></Icon>
-                    </a>
-                    <DropdownMenu slot="list">
-                        <DropdownItem name="setting">设置</DropdownItem>
-                        <DropdownItem name="logout">退出登录</DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-            </template>
-            <a v-else @click="goToLogin">
-                登录
-            </a>
+            <!--<template v-if="loginData">-->
+                <!--<Dropdown @on-click="dropdownClicked" trigger="click" style="margin-left: 20px;text-align: left">-->
+                    <!--<a href="javascript:void(0)">-->
+                        <!--{{hasValue(loginData.nickName) ? loginData.nickName : '137****2123'}}-->
+                        <!--<Icon type="arrow-down-b"></Icon>-->
+                    <!--</a>-->
+                    <!--<DropdownMenu slot="list">-->
+                        <!--<DropdownItem name="setting">设置</DropdownItem>-->
+                        <!--<DropdownItem name="logout">退出登录</DropdownItem>-->
+                    <!--</DropdownMenu>-->
+                <!--</Dropdown>-->
+            <!--</template>-->
+            <!--<a v-else @click="goToLogin">-->
+                <!--登录-->
+            <!--</a>-->
         </div>
     </div>
 </template>
