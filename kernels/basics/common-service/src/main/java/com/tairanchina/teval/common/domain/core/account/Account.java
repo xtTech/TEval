@@ -1,4 +1,4 @@
-package com.tairanchina.teval.common.domain.core;
+package com.tairanchina.teval.common.domain.core.account;
 
 import com.tairanchina.teval.common.domain.base.EntityObject;
 

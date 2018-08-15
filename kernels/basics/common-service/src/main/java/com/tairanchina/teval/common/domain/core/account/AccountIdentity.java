@@ -1,9 +1,10 @@
-package com.tairanchina.teval.common.domain.core;
+package com.tairanchina.teval.common.domain.core.account;
 
 import com.tairanchina.teval.common.domain.base.CycleEntityObject;
 
 /**
  * 说明: 账号凭证
+ * Note: 修改账号凭证保留记录
  * Tip: 所属Account By updatedBy
  *
  * @author 薛文毅

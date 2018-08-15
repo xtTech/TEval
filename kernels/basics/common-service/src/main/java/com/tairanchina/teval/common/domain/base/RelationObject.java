@@ -4,6 +4,7 @@ import java.util.Date;
 
 /**
  * 说明: 关系对象
+ * NOTE: 多用于多对多关系
  *
  * @author 薛文毅
  *         Created by 薛文毅 on 2018/8/13.
