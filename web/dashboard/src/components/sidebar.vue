@@ -20,7 +20,7 @@
                     <MenuItem name="service-publish">发布服务</MenuItem>
                 </Submenu>
             </Menu>
-            <Button type="dashed" size="large" class="btn-custom-add-fn" align="center">添加功能插件</Button>
+            <Button type="dashed" size="large" class="btn-custom-add-fn" align="center" icon="plus">添加功能插件</Button>
         </Sider>
     </div>
 </template>

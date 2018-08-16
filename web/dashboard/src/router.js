@@ -11,6 +11,27 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         {
+            path: '/',
+            name: 'home',
+            meta: {
+                title: ''
+            },
+            redirect: {
+                name: 'account-basic'
+            },
+            component: Entry,
+            children: [
+                {
+                    path: 'app',
+                    name: 'switch-app',
+                    meta: {
+                        title: '选择应用'
+                    },
+                    component: (resolve) => require(['./views/home/home.vue'], resolve)
+                }
+            ]
+        },
+        {
             path: '/account',
             name: 'account',
             meta: {
@@ -38,27 +59,56 @@ const router = new VueRouter({
                     component: (resolve) => require(['./views/account/pwd.vue'], resolve)
                 }
             ]
+        },
+        {
+            path: '/my-service',
+            name: 'my-service',
+            meta: {
+                title: '我的服务'
+            },
+            redirect: {
+                name: 'account-basic'
+            },
+            component: Entry,
+            children: [
+                {
+                    path: 'apply',
+                    name: 'service-apply',
+                    meta: {
+                        title: '申请列表'
+                    },
+                    component: (resolve) => require(['./views/service/apply.vue'], resolve)
+                },
+                {
+                    path: 'publish',
+                    name: 'service-publish',
+                    meta: {
+                        title: '发布服务'
+                    },
+                    component: (resolve) => require(['./views/service/publish.vue'], resolve)
+                }
+            ]
         }
     ]
 });
 
 router.beforeEach((to, from, next) => {
     console.log(to);
-    if (to.name !== 'login') {
-        // 检查是否登录
-        let loginData = localStorage.getItem('loginData');
-        if (!loginData) {
-            // 未登录
-            router.push({
-                name: 'login'
-            });
-            iView.Notice.error({
-                title: '未登录',
-                desc: '请先登录！'
-            });
-            return;
-        }
-    }
+    // if (to.name !== 'login') {
+    //     // 检查是否登录
+    //     let loginData = localStorage.getItem('loginData');
+    //     if (!loginData) {
+    //         // 未登录
+    //         router.push({
+    //             name: 'login'
+    //         });
+    //         iView.Notice.error({
+    //             title: '未登录',
+    //             desc: '请先登录！'
+    //         });
+    //         return;
+    //     }
+    // }
     iView.LoadingBar.start();
     updateSiteTitle(to.meta.pageTitle != null ? to.meta.pageTitle : to.meta.title);
     next();
