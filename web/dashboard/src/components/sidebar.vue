@@ -20,7 +20,9 @@
                     <MenuItem name="service-publish">发布服务</MenuItem>
                 </Submenu>
             </Menu>
-            <Button type="dashed" size="large" class="btn-custom-add-fn" align="center" icon="plus">添加功能插件</Button>
+            <div style="width: 100%" align="center">
+                <Button type="dashed" size="large" class="btn-custom-add-fn" align="center" icon="md-add">添加功能插件</Button>
+            </div>
         </Sider>
     </div>
 </template>
@@ -61,9 +63,6 @@ export default {
 <style lang="scss">
     .btn-custom-add-fn{
         margin: 10px;
-        align-self: center;
-        align-items: center;
-        width: 90%;
         padding: 0;
     }
     #page-admin {

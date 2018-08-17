@@ -19,17 +19,7 @@ const router = new VueRouter({
             redirect: {
                 name: 'account-basic'
             },
-            component: Entry,
-            children: [
-                {
-                    path: 'app',
-                    name: 'switch-app',
-                    meta: {
-                        title: '选择应用'
-                    },
-                    component: (resolve) => require(['./views/home/home.vue'], resolve)
-                }
-            ]
+            component: Entry
         },
         {
             path: '/account',
@@ -43,7 +33,7 @@ const router = new VueRouter({
             component: Entry,
             children: [
                 {
-                    path: 'basic',
+                    path: 'account-basic',
                     name: 'account-basic',
                     meta: {
                         title: '基本资料'
@@ -51,7 +41,7 @@ const router = new VueRouter({
                     component: (resolve) => require(['./views/account/basic.vue'], resolve)
                 },
                 {
-                    path: 'pwd',
+                    path: 'account-pwd',
                     name: 'account-pwd',
                     meta: {
                         title: '修改密码'
@@ -61,18 +51,18 @@ const router = new VueRouter({
             ]
         },
         {
-            path: '/my-service',
-            name: 'my-service',
+            path: '/service',
+            name: 'service',
             meta: {
                 title: '我的服务'
             },
             redirect: {
-                name: 'account-basic'
+                name: 'service-apply'
             },
             component: Entry,
             children: [
                 {
-                    path: 'apply',
+                    path: 'service-apply',
                     name: 'service-apply',
                     meta: {
                         title: '申请列表'
@@ -80,12 +70,28 @@ const router = new VueRouter({
                     component: (resolve) => require(['./views/service/apply.vue'], resolve)
                 },
                 {
-                    path: 'publish',
+                    path: 'service-publish',
                     name: 'service-publish',
                     meta: {
                         title: '发布服务'
                     },
                     component: (resolve) => require(['./views/service/publish.vue'], resolve)
+                },
+                {
+                    path: 'service-users',
+                    name: 'service-users',
+                    meta: {
+                        title: '使用列表'
+                    },
+                    component: (resolve) => require(['./views/service/users.vue'], resolve)
+                },
+                {
+                    path: 'service-create',
+                    name: 'service-create',
+                    meta: {
+                        title: '创建服务'
+                    },
+                    component: (resolve) => require(['./views/service/create.vue'], resolve)
                 }
             ]
         }

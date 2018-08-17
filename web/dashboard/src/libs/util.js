@@ -13,7 +13,7 @@ export const http = ajax;
  * @param title
  */
 export const updateSiteTitle = title => {
-    const suffix = 'APP 版本管理平台';
+    const suffix = '泰易服';
     title = title ? title + ' - ' + suffix : suffix;
     window.document.title = title;
 };

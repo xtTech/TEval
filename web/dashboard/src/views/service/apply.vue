@@ -30,7 +30,7 @@
                             <Row>
                                 <Col span="24" style="text-align: right">
                                     <!--<Button type="ghost" icon="plus" style="margin-right: 14px">添加 Android 版本</Button>-->
-                                    <Button type="primary" icon="search">搜索</Button>
+                                    <Button type="primary" icon="md-search">搜索</Button>
                                 </Col>
                             </Row>
                         </Form>
@@ -81,11 +81,12 @@ export default {
                 {
                     title: '申请编号',
                     key: 'id',
-                    minWidth: 100,
+                    minWidth: 120,
                 },
                 {
                     title: '服务名称',
                     key: 'serviceName',
+                    minWidth: 100,
                 },
                 {
                     title: '付费类型',

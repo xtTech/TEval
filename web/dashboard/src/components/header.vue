@@ -1,7 +1,7 @@
 <template>
     <div class="header">
         <div class="header-logo">
-            <img class="logo" src="@/images/logohere_black.jpg"/>
+            <img class="logo" src="@/images/logohere_blacknew.jpg"/>
         </div>
         <div class="header-menu">
         </div>
@@ -99,20 +99,6 @@ export default {
         };
     },
     async created () {
-        let apps = await getApps();
-
-        if (apps) {
-            this.appList = apps;
-        }
-
-        let app = getApp();
-        if (app) {
-            this.app = app;
-            this.appId = app.appId;
-        }
-
-        this.loginData = getUser();
-        this.settingForm.nickName = this.loginData.nickName;
     },
     methods: {
         handelChangeApp (appId) {
@@ -199,7 +185,7 @@ export default {
         align-self: center;
         font-size: 12px;
         line-height: 64px;
-        background-color: #495060;
+        background-color: #515a6e;
         box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.05);
         .header-logo {
             height: 100%;

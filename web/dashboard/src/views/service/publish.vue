@@ -8,8 +8,8 @@
                         <Form :model="queryParams" :label-width="80">
                             <Row>
                                 <Col span="24" style="text-align: right">
-                                    <Button type="ghost" icon="plus" style="margin-right: 14px">创建服务</Button>
-                                    <Button type="primary" icon="refresh">刷新</Button>
+                                    <Button type="default" icon="md-add" style="margin-right: 14px" @click="create">创建服务</Button>
+                                    <Button type="primary" icon="md-refresh">刷新</Button>
                                 </Col>
                             </Row>
                         </Form>
@@ -32,47 +32,48 @@ export default {
             queryParams: {},
             tableList: [
                 {
-                    id: "abcbdbe91132b4ff5e0",
-                    serviceName: "用户中心",
-                    payType: "付费",
-                    serviceStatus: "审核中",
-                    createdTime: "2018-01-01 00:00:00",
-                    serviceType: "用户管理"
+                    id: 'abcbdbe91132b4ff5e0',
+                    serviceName: '用户中心',
+                    payType: '付费',
+                    serviceStatus: '审核中',
+                    createdTime: '2018-01-01 00:00:00',
+                    serviceType: '用户管理'
                 },
                 {
-                    id: "abc12dxaa32b4ff51sa",
-                    serviceName: "消息服务",
-                    payType: "免费",
-                    serviceStatus: "未上架",
-                    createdTime: "2018-01-01 00:00:00",
-                    serviceType: "消息服务"
+                    id: 'abc12dxaa32b4ff51sa',
+                    serviceName: '消息服务',
+                    payType: '免费',
+                    serviceStatus: '未上架',
+                    createdTime: '2018-01-01 00:00:00',
+                    serviceType: '消息服务'
                 },
                 {
-                    id: "wqac12dxxbtyx14ff5bs",
-                    serviceName: "敏感词服务",
-                    payType: "免费",
-                    serviceStatus: "已上架",
-                    createdTime: "2018-01-01 00:00:00",
-                    serviceType: "基础服务"
+                    id: 'wqac12dxxbtyx14ff5bs',
+                    serviceName: '敏感词服务',
+                    payType: '免费',
+                    serviceStatus: '已上架',
+                    createdTime: '2018-01-01 00:00:00',
+                    serviceType: '基础服务'
                 },
                 {
-                    id: "wqac12dxxbtyx14ff5bs",
-                    serviceName: "IP寻址",
-                    payType: "面议",
-                    serviceStatus: "拒绝",
-                    createdTime: "2018-01-01 00:00:00",
-                    serviceType: "基础服务"
+                    id: 'wqac12dxxbtyx14ff5bs',
+                    serviceName: 'IP寻址',
+                    payType: '面议',
+                    serviceStatus: '拒绝',
+                    createdTime: '2018-01-01 00:00:00',
+                    serviceType: '基础服务'
                 }
             ],
             columns:[
                 {
                     title: '服务编号',
                     key: 'id',
-                    minWidth: 100,
+                    minWidth: 120,
                 },
                 {
                     title: '服务名称',
                     key: 'serviceName',
+                    minWidth: 100,
                 },
                 {
                     title: '分类',
@@ -106,10 +107,22 @@ export default {
 
                         if(params.row.serviceStatus==='未上架'){
                             hs.push(this.makeButton(h,'上架','primary','small'));
-                            hs.push(this.makeButton(h,'使用列表','default','small'));
+                            hs.push(this.makeButton(h,'使用列表','default','small', {
+                                click: () => {
+                                    this.$router.push({
+                                        name: 'service-users'
+                                    });
+                                }
+                            }));
                         }else if(params.row.serviceStatus==='已上架'){
                             hs.push(this.makeButton(h,'下架','error','small'));
-                            hs.push(this.makeButton(h,'使用列表','default','small'));
+                            hs.push(this.makeButton(h,'使用列表','default','small',{
+                                click: () => {
+                                    this.$router.push({
+                                        name: 'service-users'
+                                    });
+                                }
+                            }));
                         }else if(params.row.serviceStatus==='拒绝'){
                             hs.push(this.makeButton(h,'修改','primary','small'));
                         }
@@ -128,7 +141,7 @@ export default {
     created () {
     },
     methods: {
-        makeButton: function (h, text, type, size) {
+        makeButton: function (h, text, type, size, on) {
             return h('Button', {
                 props: {
                     type: type,
@@ -137,12 +150,13 @@ export default {
                 style: {
                     marginRight: '12px'
                 },
-                on: {
-                    click: () => {
-                        console.log("clicked!")
-                    }
-                }
+                on: on
             }, text);
+        },
+        create: function () {
+            this.$router.push({
+                name: 'service-create'
+            });
         }
     }
 };

@@ -4,7 +4,7 @@
             <div class="logo">
                 <img src="@/images/logo.png">
                 <h2 style="margin-bottom: 50px">
-                    <p>APP版本管理系统</p>
+                    <p>泰易服</p>
                 </h2>
             </div>
         </Card>
