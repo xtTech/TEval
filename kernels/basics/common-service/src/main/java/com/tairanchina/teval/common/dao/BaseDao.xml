@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tairanchina.teval.common.dao.BaseDao">
+    <sql id="Fields">
+        ${separator}id,
+        ${separator}created_by,
+        ${separator}created_time,
+        ${separator}updated_by,
+        ${separator}updated_time
+    </sql>
+
+    <resultMap id="BaseResultMap" type="com.tairanchina.teval.common.domain.base.BaseObject">
+        <id column="id" property="id" typeHandler="com.tairanchina.teval.common.service.typehandler.IDTypehandler"></id>
+        <result column="created_time" property="createdTime" jdbcType="TIMESTAMP"/>
+        <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="VARCHAR"/>
+        <result column="updated_by" property="updatedBy" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="id">
+        id = #{_.id,typeHandler=com.tairanchina.teval.common.service.typehandler.IDTypehandler}
+    </sql>
+    <sql id="updated_by">
+        updated_by =
+        #{_.updatedBy,jdbcType=VARCHAR}
+    </sql>
+    <sql id="updated_time">
+        updated_time = #{_.updatedTime,jdbcType=TIMESTAMP}
+    </sql>
+    <sql id="created_by">
+        created_by =
+        #{_.createdBy,jdbcType=VARCHAR}
+    </sql>
+    <sql id="created_time">
+        created_time = #{_.createdTime,jdbcType=TIMESTAMP}
+    </sql>
+
+    <sql id="ByObjectCondition">
+        <if test="_.id != null">
+            AND ${separator}
+            <include refid="com.tairanchina.teval.common.dao.BaseDao.id"/>
+        </if>
+        <if test="_.createdBy != null">
+            AND ${separator}
+            <include refid="com.tairanchina.teval.common.dao.BaseDao.created_by"/>
+        </if>
+        <if test="_.createdTime != null">
+            AND ${separator}
+            <include refid="com.tairanchina.teval.common.dao.BaseDao.created_time"/>
+        </if>
+        <if test="_.updatedBy != null">
+            AND ${separator}
+            <include refid="com.tairanchina.teval.common.dao.BaseDao.updated_by"/>
+        </if>
+        <if test="_.updatedTime != null">
+            AND ${separator}
+            <include refid="com.tairanchina.teval.common.dao.BaseDao.updated_time"/>
+        </if>
+    </sql>
+    
+    <!-- 拓展开始 -->
+    <!-- 对象模板开始 -->
+    <!-- Account -->
+    <sql id="extAccountField">
+        ,${accountTableAlias}.id AS ${accountTableAlias}T_id
+        , ${accountTableAlias}.created_by AS ${accountTableAlias}T_created_by
+        , ${accountTableAlias}.created_time AS ${accountTableAlias}T_created_time
+        , ${accountTableAlias}.updated_by AS ${accountTableAlias}T_updated_by
+        , ${accountTableAlias}.updated_time AS ${accountTableAlias}T_updated_time
+        , ${accountTableAlias}.account_secret AS ${accountTableAlias}T_account_secret
+        , ${accountTableAlias}.name AS ${accountTableAlias}T_name
+        , ${accountTableAlias}.avatar AS ${accountTableAlias}T_avatar
+        , ${accountTableAlias}.description AS ${accountTableAlias}T_description
+        , ${accountTableAlias}.type AS ${accountTableAlias}T_type
+        , ${accountTableAlias}.domain AS ${accountTableAlias}T_domain
+        , ${accountTableAlias}.status AS ${accountTableAlias}T_status
+        , ${accountTableAlias}.remark AS ${accountTableAlias}T_remark
+    </sql>
+    <!--AccountIdentity -->
+    <sql id="extAccountIdentityField">
+        , ${accountIdentityTableAlias}.id AS ${accountIdentityTableAlias}T_id
+        , ${accountIdentityTableAlias}.created_by AS ${accountIdentityTableAlias}T_created_by
+        , ${accountIdentityTableAlias}.created_time AS ${accountIdentityTableAlias}T_created_time
+        , ${accountIdentityTableAlias}.updated_by AS ${accountIdentityTableAlias}T_updated_by
+        , ${accountIdentityTableAlias}.updated_time AS ${accountIdentityTableAlias}T_updated_time
+        , ${accountIdentityTableAlias}.from_date AS ${accountIdentityTableAlias}T_from_date
+        , ${accountIdentityTableAlias}.thru_date AS ${accountIdentityTableAlias}T_thru_date
+        , ${accountIdentityTableAlias}.email AS ${accountIdentityTableAlias}T_email
+        , ${accountIdentityTableAlias}.password AS ${accountIdentityTableAlias}T_password
+        , ${accountIdentityTableAlias}.password_encrypt_salt AS ${accountIdentityTableAlias}T_password_encrypt_salt
+        , ${accountIdentityTableAlias}.status AS ${accountIdentityTableAlias}T_status
+        , ${accountIdentityTableAlias}.remark AS ${accountIdentityTableAlias}T_remark
+    </sql>
+    <!-- AccountValidation-->
+    <sql id="extAccountValidationField">
+        , ${accountValidationTableAlias}.id AS ${accountValidationTableAlias}T_id
+        , ${accountValidationTableAlias}.created_by AS ${accountValidationTableAlias}T_created_by
+        , ${accountValidationTableAlias}.created_time AS ${accountValidationTableAlias}T_created_time
+        , ${accountValidationTableAlias}.updated_by AS ${accountValidationTableAlias}T_updated_by
+        , ${accountValidationTableAlias}.updated_time AS ${accountValidationTableAlias}T_updated_time
+        , ${accountIdentityTableAlias}.from_date AS ${accountIdentityTableAlias}T_from_date
+        , ${accountIdentityTableAlias}.thru_date AS ${accountIdentityTableAlias}T_thru_date
+        , ${accountIdentityTableAlias}.code AS ${accountIdentityTableAlias}T_code
+        , ${accountIdentityTableAlias}.is_validated AS ${accountIdentityTableAlias}T_is_validated
+        , ${accountIdentityTableAlias}.error_times AS ${accountIdentityTableAlias}T_error_times
+        , ${accountIdentityTableAlias}.status AS ${accountIdentityTableAlias}T_status
+        , ${accountIdentityTableAlias}.remark AS ${accountIdentityTableAlias}T_remark
+    </sql>
+    <!-- Service -->
+    <sql id="extServiceField">
+        , ${serviceTableAlias}.id AS ${serviceTableAlias}T_id
+        , ${serviceTableAlias}.created_by AS ${serviceTableAlias}T_created_by
+        , ${serviceTableAlias}.created_time AS ${serviceTableAlias}T_created_time
+        , ${serviceTableAlias}.updated_by AS ${serviceTableAlias}T_updated_by
+        , ${serviceTableAlias}.updated_time AS ${serviceTableAlias}T_updated_time
+        , ${serviceTableAlias}.status AS ${serviceTableAlias}T_status
+        , ${serviceTableAlias}.remark AS ${serviceTableAlias}T_remark
+        , ${serviceTableAlias}.name AS ${serviceTableAlias}T_name
+        , ${serviceTableAlias}.description AS ${serviceTableAlias}T_description
+        , ${serviceTableAlias}.icon AS ${serviceTableAlias}T_icon
+        , ${serviceTableAlias}.version AS ${serviceTableAlias}T_version
+        , ${serviceTableAlias}.type AS ${serviceTableAlias}T_type
+        , ${serviceTableAlias}.vendor AS ${serviceTableAlias}T_vendor
+        , ${serviceTableAlias}.config_group_ids AS ${serviceTableAlias}T_config_group_ids
+    </sql>
+
+    <!-- 复杂查询模板开始 -->
+    <!-- @param(c) -->
+    <sql id="extPersonCondition">
+        <if test="c.personFuzzyMatch != null and c.personFuzzyMatch != ''">
+            AND
+            (
+            ${personTableAlias}.nickname LIKE "%"#{c.personFuzzyMatch,jdbcType=VARCHAR}"%"
+            OR
+            ${personTableAlias}.real_name LIKE "%"#{c.personFuzzyMatch,jdbcType=VARCHAR}"%"
+            OR
+            ${personTableAlias}.union_id LIKE "%"#{c.personFuzzyMatch,jdbcType=VARCHAR}"%"
+            )
+        </if>
+        <if test="c.personBirthDateStart != null">
+            AND ${personTableAlias}.birth_date &gt;= #{c.personBirthDateStart,jdbcType=TIMESTAMP}
+        </if>
+        <if test="c.personBirthDateEnd != null">
+            AND ${personTableAlias}.birth_date &lt;= #{c.personBirthDateEnd,jdbcType=TIMESTAMP}
+        </if>
+        <if test="c.personRegisterDateStart != null">
+            AND ${personTableAlias}.created_time &gt;= #{c.personRegisterDateStart,jdbcType=TIMESTAMP}
+        </if>
+        <if test="c.personRegisterDateEnd != null">
+            AND ${personTableAlias}.created_time &lt;= #{c.personRegisterDateEnd,jdbcType=TIMESTAMP}
+        </if>
+        <!--<if test="c.tenantId != null">-->
+            <!--AND ${personTableAlias}.org_id = #{c.tenantId}-->
+        <!--</if>-->
+    </sql>
+    <sql id="extOrganizationCondition">
+
+    </sql>
+    <sql id="extAppCondition">
+        <if test="c.appFuzzyMatch != null and c.appFuzzyMatch != ''">
+            AND
+            (
+            ${appTableAlias}.app_id LIKE "%"#{c.appFuzzyMatch,jdbcType=VARCHAR}"%"
+            OR
+            ${appTableAlias}.app_name LIKE "%"#{c.appFuzzyMatch,jdbcType=VARCHAR}"%"
+            OR
+            ${appTableAlias}.app_desc LIKE "%"#{c.appFuzzyMatch,jdbcType=VARCHAR}"%"
+            )
+        </if>
+        <if test="c.appStatus != null">
+            AND ${appTableAlias}.status =
+            #{c.appStatus,jdbcType=VARCHAR,javaType=com.tairanchina.csp.foundation.common.service.model.domain.core.property.app.App$Status}
+        </if>
+        <if test="c.appStatuses != null and c.appStatuses.size > 1">
+            AND
+            t.`status` in
+            <foreach item="item" index="index" collection="statuses" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="c.appStatuses != null and c.appStatuses.size == 1">
+            AND
+            t.`status` =
+            <foreach item="item" index="index" collection="statuses">
+                #{item}
+            </foreach>
+        </if>
+        <if test="c.appEffectStatus != null">
+            <if test="c.appEffectStatus == 0">
+                AND ${appTableAlias}.from_date &gt; now()
+            </if>
+            <if test="c.appEffectStatus == 1">
+                AND
+                ${appTableAlias}.from_date &lt;= now()
+                AND
+                (${appTableAlias}.thru_date IS NULL OR ${appTableAlias}.thru_date &gt;= now())
+            </if>
+            <if test="c.appEffectStatus == 2">
+                AND
+                ${appTableAlias}.thru_date IS NOT NULL
+                AND
+                ${appTableAlias}.thru_date &lt; now()
+            </if>
+        </if>
+    </sql>
+    <sql id="extIdentificationCondition">
+        <if test="c.personFuzzyMatch != null and c.personFuzzyMatch != ''">
+            AND ${identificationTableAlias}.ident = #{c.personFuzzyMatch, jdbcType=VARCHR}
+        </if>
+        <if test="c.identType != null and c.identType != ''">
+        AND ${identificationTableAlias}.ident_type = #{c.identType, jdbcType=VARCHAR}
+        </if>
+    </sql>
+    <sql id="extServiceCondition">
+
+    </sql>
+    <!-- 复杂查询模板结束 -->
+
+    <sql id="orderBySql">
+        <if test="query.orderBy != null and query.orderBy != ''">
+            ORDER BY ${tableAlias}.${query.orderBy}
+            <if test="query.desc">
+                DESC
+            </if>
+        </if>
+    </sql>
+
+    <sql id="singleTableOrderBySql">
+        <if test="query.orderBy != null and query.orderBy != ''">
+            ORDER BY ${query.orderBy}
+            <if test="query.desc">
+                DESC
+            </if>
+        </if>
+    </sql>
+
+    <!-- 拓展结束 -->
+</mapper>

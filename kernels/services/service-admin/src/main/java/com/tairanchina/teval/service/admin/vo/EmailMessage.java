@@ -62,7 +62,7 @@ public class EmailMessage
   private ContentType contentType;
 
   //邮件的内容
-  private String content = "你好！恭喜你获得平安免费参保体验！";
+  private String content = "邮件内容";
 
   // 邮件附件的文件名
   private List<String> attachFileNames;

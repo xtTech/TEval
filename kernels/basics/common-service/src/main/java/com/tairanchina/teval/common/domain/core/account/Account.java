@@ -28,7 +28,7 @@ public class Account extends EntityObject<String, String> {
     /**
      * 账号类型
      */
-    private String type;
+    private AccountType type;
     /**
      * 域名: xxx.teval.cn
      */
@@ -70,11 +70,11 @@ public class Account extends EntityObject<String, String> {
         return this;
     }
 
-    public String getType() {
+    public AccountType getType() {
         return type;
     }
 
-    public Account setType(String type) {
+    public Account setType(AccountType type) {
         this.type = type;
         return this;
     }
@@ -86,5 +86,10 @@ public class Account extends EntityObject<String, String> {
     public Account setDomain(String domain) {
         this.domain = domain;
         return this;
+    }
+
+    public enum AccountType{
+        NORMAL,
+        SYSTEM
     }
 }

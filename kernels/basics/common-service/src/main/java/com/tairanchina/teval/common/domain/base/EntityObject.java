@@ -10,17 +10,17 @@ public class EntityObject<T, Z> extends BaseObject<T, Z> {
     /**
      * 实体状态
      */
-    private String status;
+    private Status status;
     /**
      * 备注: Plain Text or JSON format
      */
     private String remark;
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public EntityObject setStatus(String status) {
+    public EntityObject setStatus(Status status) {
         this.status = status;
         return this;
     }
@@ -32,5 +32,11 @@ public class EntityObject<T, Z> extends BaseObject<T, Z> {
     public EntityObject setRemark(String remark) {
         this.remark = remark;
         return this;
+    }
+
+    public enum Status{
+        INACTIVE,
+        ACTIVE,
+        INVALID
     }
 }

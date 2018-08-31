@@ -9,6 +9,6 @@ public class AdminInitiator {
 
     @PostConstruct
     public void init() {
-
+        System.out.println("初始化函数！");
     }
 }

@@ -5,8 +5,15 @@
 
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
     <springProperty scope="context" name="logPath" source="logging.path" defaultValue="/tmp"/>
+    <springProperty scope="context" name="esUrl" source="logging.es.url"/>
+    <springProperty scope="context" name="esIndex" source="logging.es.index" defaultValue="dew-log"/>
+    <springProperty scope="context" name="esConnectTimeout" source="logging.es.connectTimeout" defaultValue="30000"/>
+    <springProperty scope="context" name="esReadTimeout" source="logging.es.readTimeout" defaultValue="30000"/>
+    <springProperty scope="context" name="esMaxQueueSize" source="logging.es.maxQueueSize" defaultValue="52428800"/>
+    <springProperty scope="context" name="esMaxMessageSize" source="logging.es.maxMessageSize" defaultValue="-1"/>
 
     <property name="LOG_FILE" value="${logPath}/${springAppName}/%d{yyyy-MM-dd}.log"/>​
+    <property name="ES_INDEX" value="${esIndex}-%d{yyyy-MM-dd}"/>​
 
     <appender name="dailyRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

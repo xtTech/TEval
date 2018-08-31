@@ -11,7 +11,7 @@ import com.tairanchina.teval.common.domain.base.CycleEntityObject;
  * @author 薛文毅
  *         Created by 薛文毅 on 2018/8/13.
  */
-public class AccountValidation extends CycleEntityObject<Long, Long> {
+public class AccountValidation extends CycleEntityObject<Long, String> {
     /**
      * 验证码
      */

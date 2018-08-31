@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tairanchina.teval.common.dao.AccountValidationDao">
+    <sql id="Fields">
+        ${separator}code,
+        ${separator}is_validated,
+        ${separator}error_times,
+        ${separator}from_date,
+        ${separator}thru_date,
+        ${separator}status,
+        ${separator}remark
+    </sql>
+
+    <resultMap id="BaseResultMap" type="com.tairanchina.teval.common.domain.core.account.AccountValidation" extends="com.tairanchina.teval.common.dao.BaseDao.BaseResultMap">
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="is_validated" property="isValidated" jdbcType="BOOLEAN"/>
+        <result column="error_times" property="errorTimes" jdbcType="BIGINT"/>
+        <result column="from_date" property="fromDate" jdbcType="TIMESTAMP"/>
+        <result column="thru_date" property="thruDate" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR" typeHandler="com.tairanchina.teval.common.service.typehandler.EnumHandlerType"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="PrefixSelectSql">
+        SELECT
+        <include refid="Fields">
+            <property name="separator" value="t."/>
+        </include>,
+        <include refid="com.tairanchina.teval.common.dao.BaseDao.Fields">
+            <property name="separator" value="t."/>
+        </include>
+        FROM
+        t_account_validation t
+    </sql>
+    <sql id="PrefixWhere">
+        where t.from_date &lt;= now() and t.thru_date &gt;= now()
+    </sql>
+    <sql id="ByPrimaryKey">
+        AND t.id = #{pk,jdbcType=BIGINT}
+    </sql>
+
+    <sql id="ByObjectCondition">
+        <if test="_.id != null">
+            AND ${separator}id= #{_.id}
+        </if>
+        <if test="_.createdBy != null">
+            AND ${separator}created_by= #{_.createdBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.updatedBy != null">
+            AND ${separator}updated_by= #{_.updatedBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.createdTime != null">
+            AND ${separator}created_time = #{_.createdTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.updatedTime != null">
+            AND ${separator}updated_time = #{_.updatedTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.status != null">
+            AND ${separator}status= #{_.status,jdbcType=VARCHAR}
+        </if>
+        <if test="_.remark != null">
+            AND ${separator}remark= #{_.remark,jdbcType=VARCHAR}
+        </if>
+        <if test="_.code != null">
+            AND ${separator}code= #{_.code,jdbcType=VARCHAR}
+        </if>
+        <if test="_.validated != null">
+            AND ${separator}is_validated= #{_.validated,jdbcType=BOOLEAN}
+        </if>
+        <if test="_.errorTimes != null">
+            AND ${separator}error_times= #{_.errorTimes,jdbcType=BIGINT}
+        </if>
+        <if test="_.fromDate">
+            AND ${separator}from_date= #{_.fromDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.thruDate">
+            AND ${separator}thru_date=#{_.thruDate,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    <select id="getByPrimaryKey" resultMap="BaseResultMap">
+        <include refid="PrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByPrimaryKey"/>
+    </select>
+
+    <select id="findByCondition" resultMap="BaseResultMap">
+        <include refid="PrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByObjectCondition">
+            <property name="separator" value="t."/>
+        </include>
+    </select>
+
+    <insert id="insert" parameterType="com.tairanchina.teval.common.domain.core.account.AccountValidation" useGeneratedKeys="true" keyProperty="id">
+        insert into t_account_validation(
+            created_by,
+            updated_by,
+            created_time,
+            updated_time,
+            code,
+            is_validated,
+            error_times,
+            from_date,
+            thru_date,
+            status,
+            remark
+        ) values (
+            #{createdBy,jdbcType=VARCHAR},
+            #{updatedBy,jdbcType=VARCHAR},
+            now(),now(),
+            #{code,jdbcType=VARCHAR},
+            #{isValidated,jdbcType=BOOLEAN},
+            #{errorTimes,jdbcType=BIGINT},
+            #{fromDate,jdbcType=TIMESTAMP},
+            #{thruDate,jdbcType=TIMESTAMP},
+            #{status,javaType=com.tairanchina.teval.common.domain.base.EntityObject$Status,typeHandler=com.tairanchina.teval.common.service.typehandler.EnumHandlerType},
+            #{remark,jdbcType=VARCHAR}
+        ) on duplicate key
+            update
+            updated_by = #{updatedBy,jdbcType=VARCHAR},
+            updated_time = now()
+    </insert>
+
+    <update id="updateByPrimaryKey">
+        update t_account_validation t set t.id = t.id
+        <if test="_.createdBy != null">
+            ,t.created_by= #{_.createdBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.updatedBy != null">
+            ,t.updated_by= #{_.updatedBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.createdTime != null">
+            ,t.created_time = #{_.createdTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.updatedTime != null">
+            ,t.updated_time = #{_.updatedTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.status != null">
+            ,t.status= #{_.status,jdbcType=VARCHAR}
+        </if>
+        <if test="_.remark != null">
+            ,t.remark= #{_.remark,jdbcType=VARCHAR}
+        </if>
+        <if test="_.code != null">
+            ,t.code= #{_.code,jdbcType=VARCHAR}
+        </if>
+        <if test="_.isValidated != null">
+            ,t.is_validated= #{_.isValidated,jdbcType=BOOLEAN}
+        </if>
+        <if test="_.errorTimes != null">
+            ,t.error_times= #{_.errorTimes,jdbcType=BIGINT}
+        </if>
+        <if test="_.fromDate">
+            ,t.from_date= #{_.fromDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.thruDate">
+            ,t.thru_date=#{_.thruDate,jdbcType=TIMESTAMP}
+        </if>
+        ,t.updated_time = now()
+        where t.id = #{pk,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteByPrimaryKey">
+        update t_account_validation set status="INVALID" where id = #{pk,typeHandler=com.tairanchina.teval.common.service.typehandler.IDTypehandler}
+    </delete>
+</mapper>

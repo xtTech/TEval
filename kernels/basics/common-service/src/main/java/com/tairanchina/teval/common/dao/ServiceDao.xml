@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tairanchina.teval.common.dao.ServiceDao">
+    <sql id="Fields">
+        id,
+        created_time,
+        updated_time,
+        created_by,
+        updated_by,
+        status,
+        remark,
+        name,
+        description,
+        icon,
+        version,
+        type,
+        vendor,
+        config_group_ids
+    </sql>
+    <resultMap id="BaseResultMap" type="com.tairanchina.teval.common.domain.core.service.Service" extends="com.tairanchina.teval.common.dao.BaseDao.BaseResultMap">
+        <result column="status" property="status" jdbcType="VARCHAR" typeHandler="com.tairanchina.teval.common.service.typehandler.EnumHandlerType"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="icon" property="icon" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="BIGINT"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="vendor" property="vendor" jdbcType="VARCHAR"/>
+        <result column="config_group_ids" property="configGroupIds" jdbcType="VARCHAR" typeHandler="com.tairanchina.teval.common.service.typehandler.ListHandlerType"/>
+    </resultMap>
+
+    <sql id="PrefixSelectSql">
+        SELECT
+        <include refid="Fields">
+            <property name="separator" value="t."/>
+        </include>
+        FROM
+        t_service t
+    </sql>
+    <sql id="PrefixWhere">
+        where t.status = "ACTIVE"
+    </sql>
+    <sql id="ByPrimaryKey">
+        AND t.id = #{pk,jdbcType=VARCHAR}
+    </sql>
+    <sql id="ByObjectCondition">
+        <if test="_.id != null">
+            AND ${separator}id = #{_.id,jdbcType=VARCHAR}
+        </if>
+        <if test="_.createdTime != null">
+            AND ${separator}created_time = #{_.createdTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.updatedTime != null">
+            AND ${separator}updated_time = #{_.updatedTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.createdBy != null">
+            AND ${separator}created_by = #{_.createdBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.updatedBy != null">
+            AND ${separator}updated_by = #{_.updatedBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.status != null">
+            AND ${separator}status= #{_.status,jdbcType=VARCHAR}
+        </if>
+        <if test="_.remark != null">
+            AND ${separator}remark= #{_.remark,jdbcType=VARCHAR}
+        </if>
+        <if test="_.name != null">
+            AND ${separator}name= #{_.name,jdbcType=VARCHAR}
+        </if>
+        <if test="_.description != null">
+            AND ${separator}description= #{_.description,jdbcType=VARCHAR}
+        </if>
+        <if test="_.icon != null">
+            AND ${separator}icon= #{_.icon,jdbcType=VARCHAR}
+        </if>
+        <if test="_.version != null">
+            AND ${separator}version= #{_.version,jdbcType=BIGINT}
+        </if>
+        <if test="_.type != null">
+            AND ${separator}type= #{_.type,jdbcType=VARCHAR}
+        </if>
+        <if test="_.vendor != null">
+            AND ${separator}vendor= #{_.vendor,jdbcType=VARCHAR}
+        </if>
+        <if test="_.configGroupIds != null">
+            AND ${separator}config_group_ids= #{_.configGroupIds,jdbcType=VARCHAR,typeHandler=com.tairanchina.teval.common.service.typehandler.ListHandlerType}
+        </if>
+    </sql>
+    <select id="getByPrimaryKey" resultMap="BaseResultMap">
+        <include refid="PrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByPrimaryKey"/>
+    </select>
+
+    <select id="findByCondition" resultMap="BaseResultMap">
+        <include refid="PrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByObjectCondition">
+            <property name="separator" value="t."/>
+        </include>
+    </select>
+    
+    <insert id="insert">
+        insert into t_service
+        (
+            id,
+            created_time,
+            updated_time,
+            created_by,
+            updated_by,
+            status,
+            remark,
+            name,
+            description,
+            icon,
+            version,
+            type,
+            vendor,
+            config_group_ids
+        ) values (
+            #{id},
+            now(),now(),
+            #{createdBy},
+            #{updatedBy},
+            #{status,javaType=com.tairanchina.teval.common.domain.base.EntityObject$Status,typeHandler=com.tairanchina.teval.common.service.typehandler.EnumHandlerType},
+            #{remark,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+            #{icon,jdbcType=VARCHAR},
+            #{version,jdbcType=BIGINT},
+            #{type,jdbcType=VARCHAR},
+            #{vendor,jdbcType=VARCHAR},
+            #{configGroupIds,javaType=java.util.List,jdbcType=VARCHAR,typeHandler=com.tairanchina.teval.common.service.typehandler.ListHandlerType}
+        ) on duplicate key
+        update
+        updated_by = #{updatedBy,jdbcType=VARCHAR},
+        updated_time = now()
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.tairanchina.teval.common.domain.core.service.Service">
+        update t_service set
+        <if test="_.createdBy != null">
+            created_by = #{_.createdBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.updatedBy != null">
+            ,updated_by = #{_.updatedBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.status != null">
+            ,status= #{_.status,jdbcType=VARCHAR}
+        </if>
+        <if test="_.remark != null">
+            ,remark= #{_.remark,jdbcType=VARCHAR}
+        </if>
+        <if test="_.name != null">
+            ,name= #{_.name,jdbcType=VARCHAR}
+        </if>
+        <if test="_.description != null">
+            ,description= #{_.description,jdbcType=VARCHAR}
+        </if>
+        <if test="_.icon != null">
+            ,icon= #{_.icon,jdbcType=VARCHAR}
+        </if>
+        <if test="_.version != null">
+            ,version= #{_.version,jdbcType=BIGINT}
+        </if>
+        <if test="_.type != null">
+            ,type= #{_.type,jdbcType=VARCHAR}
+        </if>
+        <if test="_.vendor != null">
+            ,vendor= #{_.vendor,jdbcType=VARCHAR}
+        </if>
+        <if test="_.configGroupIds != null">
+            ,config_group_ids= #{_.configGroupIds,jdbcType=VARCHAR,typeHandler=com.tairanchina.teval.common.service.typehandler.ListHandlerType}
+        </if>
+        ,updated_time = now()
+        where id = #{pk,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteByPrimaryKey">
+        update t_service set status = "INVALID" where id = #{pk,typeHandler=com.tairanchina.teval.common.service.typehandler.IDTypehandler}
+    </delete>
+</mapper>

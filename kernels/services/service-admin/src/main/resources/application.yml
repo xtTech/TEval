@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://db.fengdai.org:3306/ucenter_1.2.0?characterEncoding=utf8&defaultCharacterSet=utf8&allowMultiQueries=true&autoReconnect=true
+    url: jdbc:mysql://db.fengdai.org:3306/teval_1.0?characterEncoding=utf8&defaultCharacterSet=utf8&allowMultiQueries=true&autoReconnect=true
     username: csp
     password: csp2017DEV9
     druid:
@@ -22,3 +22,13 @@ spring:
           enabled: true
       stat-view-servlet:
         enabled: true
+  redis:
+      host: redis.fengdai.org
+      port: 6379
+      database: 12
+      password: tairan2017@
+dew:
+  cluster:
+    cache: redis
+    dist: redis
+    mq: redis

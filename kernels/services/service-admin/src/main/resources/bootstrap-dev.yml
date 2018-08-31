@@ -1,7 +1,33 @@
 spring:
+  datasource:
+    url: jdbc:mysql://db.fengdai.org:3306/teval_1.0?characterEncoding=utf8&defaultCharacterSet=utf8&allowMultiQueries=true&autoReconnect=true
+    username: csp
+    password: csp2017DEV9
+    druid:
+      initial-size: 8
+      min-idle: 8
+      max-active: 32
+      test-on-borrow: false
+      test-while-idle: true
+      validation-query: SELECT 1
+      min-evictable-idle-time-millis: 30000
+      time-between-eviction-runs-millis: 10000
+      keep-alive: true
+      db-type: mysql
+      poolPreparedStatements: false
+      maxOpenPreparedStatements: -1
+      driver-class-name: com.mysql.jdbc.Driver
+      filter:
+        stat:
+          enabled: true
+      stat-view-servlet:
+        enabled: true
   cloud:
     config:
       enabled: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
 
 eureka:
   client:
@@ -34,7 +60,7 @@ email:
     auth: true
     protocol: "smtp"
     from: "572853319@qq.com"
-    authCode: "hhkgbnvvgvnebeei"
+    authCode: "gizbotcbybflbdbe"
     fromName: "偶you no..."
     ssl: true
     to: "hduds1314kx@163.com"

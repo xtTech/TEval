@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tairanchina.teval.common.dao.AccountIdentDao">
+    <sql id="Fields">
+        ${separator}id,
+        ${separator}created_by,
+        ${separator}created_time,
+        ${separator}updated_by,
+        ${separator}updated_time,
+        ${separator}email,
+        ${separator}password,
+        ${separator}password_encrypt_salt,
+        ${separator}from_date,
+        ${separator}thru_date,
+        ${separator}status,
+        ${separator}remark
+    </sql>
+
+    <resultMap id="BaseResultMap" type="com.tairanchina.teval.common.domain.core.account.AccountIdentity" extends="com.tairanchina.teval.common.dao.BaseDao.BaseResultMap">
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="password_encrypt_salt" property="passwordEncryptSalt" jdbcType="VARCHAR"/>
+        <result column="from_date" property="fromDate" jdbcType="TIMESTAMP"/>
+        <result column="thru_date" property="thruDate" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR" typeHandler="com.tairanchina.teval.common.service.typehandler.EnumHandlerType"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="ExtResultMap" type="com.tairanchina.teval.common.domain.core.ext.entity.AccountIdentityExt" extends="BaseResultMap">
+        <association property="account" resultMap="com.tairanchina.teval.common.dao.AccountDao.BaseResultMap" columnPrefix="accountT_" />
+    </resultMap>
+    <sql id="PrefixSelectSql">
+        SELECT
+        <include refid="Fields">
+            <property name="separator" value="t."/>
+        </include>
+        FROM
+        t_account_ident t
+    </sql>
+    <sql id="PrefixWhere">
+        where t.status != "INVALID" <!--t.from_date &lt;= now() and t.thru_date &gt;= now()-->
+    </sql>
+    <sql id="ByPrimaryKey">
+        AND t.id = #{pk,jdbcType=BIGINT}
+    </sql>
+    <sql id="ByObjectCondition">
+        <if test="_.id != null">
+            AND ${separator}id = #{_.id}
+        </if>
+        <if test="_.createdTime != null">
+            AND ${separator}created_time = #{_.createdTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.updatedTime != null">
+            AND ${separator}updated_time = #{_.updatedTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.createdBy != null">
+            AND ${separator}created_by = #{_.createdBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.updatedBy != null">
+            AND ${separator}updated_by = #{_.updatedBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.status != null">
+            AND ${separator}status= #{_.status,jdbcType=VARCHAR,typeHandler=com.tairanchina.teval.common.service.typehandler.EnumHandlerType}
+        </if>
+        <if test="_.remark != null">
+            AND ${separator}remark= #{_.remark,jdbcType=VARCHAR}
+        </if>
+        <if test="_.email != null">
+            AND ${separator}email= #{_.email,jdbcType=VARCHAR}
+        </if>
+        <if test="_.password != null">
+            AND ${separator}password= #{_.password,jdbcType=VARCHAR}
+        </if>
+        <if test="_.passwordEncryptSalt != null">
+            AND ${separator}password_encrypt_salt= #{_.passwordEncryptSalt,jdbcType=VARCHAR}
+        </if>
+        <if test="_.fromDate != null">
+            AND ${separator}from_date= #{_.fromDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.thruDate != null">
+            AND ${separator}thru_date= #{_.thruDate,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+    <select id="getByPrimaryKey" resultMap="BaseResultMap">
+        <include refid="PrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByPrimaryKey"/>
+    </select>
+
+    <select id="findByCondition" resultMap="BaseResultMap">
+        <include refid="PrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByObjectCondition">
+            <property name="separator" value="t."/>
+        </include>
+    </select>
+
+    <insert id="insert" parameterType="com.tairanchina.teval.common.domain.core.account.AccountIdentity" useGeneratedKeys="true" keyProperty="id">
+        insert into t_account_ident(
+            id,
+            created_time,
+            updated_time,
+            created_by,
+            updated_by,
+            status,
+            remark,
+            email,
+            password,
+            password_encrypt_salt,
+            from_date,
+            thru_date
+        ) values (
+            #{id},
+            now(),now(),
+            #{createdBy,jdbcType=VARCHAR},
+            #{updatedBy,jdbcType=VARCHAR},
+            #{status,javaType=com.tairanchina.teval.common.domain.base.EntityObject$Status,typeHandler=com.tairanchina.teval.common.service.typehandler.EnumHandlerType},
+            #{remark,jdbcType=VARCHAR},
+            #{email,jdbcType=VARCHAR},
+            #{password,jdbcType=VARCHAR},
+            #{passwordEncryptSalt,jdbcType=VARCHAR},
+            #{fromDate,jdbcType=TIMESTAMP},
+            #{thruDate,jdbcType=TIMESTAMP}
+        ) on duplicate key update
+            updated_by = #{updatedBy,jdbcType=VARCHAR},
+            updated_time = now()
+    </insert>
+
+    <update id="updateByPrimaryKey">
+        update t_account_ident t set t.id=t.id
+        <if test="_.updatedBy != null">
+            ,t.updated_by = #{_.updatedBy,jdbcType=VARCHAR}
+        </if>
+        <if test="_.status != null">
+            ,t.status = #{_.status,javaType=com.tairanchina.teval.common.domain.base.EntityObject$Status,typeHandler=com.tairanchina.teval.common.service.typehandler.EnumHandlerType}
+        </if>
+        <if test="_.remark != null">
+            ,t.remark = #{_.remark,jdbcType=VARCHAR}
+        </if>
+        <if test="_.email != null">
+            ,t.email = #{_.email,jdbcType=VARCHAR}
+        </if>
+        <if test="_.password != null">
+            ,t.password = #{_.password,jdbcType=VARCHAR}
+        </if>
+        <if test="_.passwordEncryptSalt != null">
+            ,t.password_encrypt_salt = #{_.passwordEncryptSalt,jdbcType=VARCHAR}
+        </if>
+        <if test="_.fromDate != null">
+            ,t.from_date = #{_.fromDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="_.thruDate != null">
+            ,t.thru_date = #{_.thruDate,jdbcType=VARCHAR}
+        </if>
+        ,t.updated_time = now()
+        where t.id = #{pk,jdbcType=VARCHAR}
+    </update>
+    <delete id="deleteByPrimaryKey">
+        update t_account_ident set status = "INVALID" where id = #{pk,typeHandler=com.tairanchina.teval.common.service.typehandler.IDTypehandler}
+    </delete>
+
+    <sql id="ExtSelectFieldSql">
+        <if test="ext.extAccount">
+            <include refid="com.tairanchina.teval.common.dao.BaseDao.extAccountField">
+                <property name="accountTableAlias" value="account"/>
+            </include>
+        </if>
+    </sql>
+    <sql id="ExtSelectLeftJoinSql">
+        <if test="ext.extAccount">
+            LEFT JOIN t_account account ON account.id = t.created_by
+        </if>
+    </sql>
+    <sql id="ExtPrefixSelectSql">
+        SELECT
+        <include refid="Fields">
+            <property name="separator" value="t."/>
+        </include>
+        <include refid="ExtSelectFieldSql"/>
+        FROM
+        t_account_ident t
+        <include refid="ExtSelectLeftJoinSql"/>
+    </sql>
+    <sql id="ExtWhereConditionSql">
+        <if test="c.identFuzzyMatch != null and c.identFuzzyMatch != ''">
+            AND (
+            t.email LIKE "%"#{c.identFuzzyMatch,jdbcType=VARCHAR}"%"
+            OR
+            t.remark LIKE "%"#{c.identFuzzyMatch,jdbcType=VARCHAR}"%"
+            )
+        </if>
+        <if test="c.identStatusList != null">
+            <if test="c.identStatusList.size == 1">
+                AND t.`status` =
+                <foreach item="item" index="index" collection="c.identStatusList">
+                    #{item,jdbcType=VARCHAR,javaType=com.tairanchina.teval.common.domain.base.EntityObject$Status,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+                </foreach>
+            </if>
+            <if test="c.identStatusList.size > 1">
+                AND
+                t.`status` in
+                <foreach item="item" index="index" collection="c.identStatusList" open="(" separator="," close=")">
+                    #{item,jdbcType=VARCHAR,javaType=com.tairanchina.teval.common.domain.base.EntityObject$Status,typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+                </foreach>
+            </if>
+        </if>
+        <if test="c.effectStatus != null">
+            <if test="c.effectStatus == 0">
+                AND t.from_date &gt; now()
+            </if>
+            <if test="c.effectStatus == 1">
+                AND (
+                t.from_date &lt; now() and
+                (
+                (t.thru_date IS NOT NULL and t.thru_date &gt; now())
+                or
+                t.thru_date IS NULL
+                )
+                )
+            </if>
+            <if test="c.effectStatus == 2">
+                AND (t.thru_date IS NOT NULL and t.thru_date &lt; now())
+            </if>
+        </if>
+        ${extraSQL}
+    </sql>
+
+    <select id="findExtByCondition" resultMap="ExtResultMap">
+        <include refid="ExtPrefixSelectSql"/>
+        <include refid="PrefixWhere"/>
+        <include refid="ByObjectCondition">
+            <property name="separator" value="t."/>
+        </include>
+        <include refid="ExtWhereConditionSql"/>
+    </select>
+</mapper>
